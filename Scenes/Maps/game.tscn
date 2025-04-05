@@ -1,0 +1,94 @@
+[gd_scene load_steps=13 format=3 uid="uid://bohnk0v8c2sb7"]
+
+[ext_resource type="PackedScene" uid="uid://ct3tqi60eog4g" path="res://Scenes/Objects/slappy.tscn" id="1_nh5p0"]
+[ext_resource type="PackedScene" uid="uid://dp5b53jpyngdr" path="res://Scenes/Objects/follow_camera.tscn" id="2_nh5p0"]
+[ext_resource type="Texture2D" uid="uid://iim4civdbn6c" path="res://Textures/test_grid.png" id="3_ahoup"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_nh5p0"]
+size = Vector3(500, 5, 500)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_vbkge"]
+albedo_texture = ExtResource("3_ahoup")
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_ahoup"]
+size = Vector2(500, 500)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_ahoup"]
+size = Vector3(500, 100, 5)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_xy7d5"]
+albedo_texture = ExtResource("3_ahoup")
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_vbkge"]
+size = Vector2(500, 100)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_og8sx"]
+albedo_texture = ExtResource("3_ahoup")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_u7ydd"]
+albedo_texture = ExtResource("3_ahoup")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_cdrm4"]
+albedo_texture = ExtResource("3_ahoup")
+
+[node name="Game" type="Node3D"]
+
+[node name="slappy" parent="." node_paths=PackedStringArray("camera") instance=ExtResource("1_nh5p0")]
+camera = NodePath("../follow_camera")
+
+[node name="follow_camera" parent="." instance=ExtResource("2_nh5p0")]
+transform = Transform3D(-1, 0, -1.50996e-07, 0, 1, 0, 1.50996e-07, 0, -1, 0, 2, -3)
+script = null
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.258819, 0.965926, 0, -0.965926, 0.258819, 0, 0, 0)
+
+[node name="HardSurface" type="StaticBody3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="HardSurface"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -50, 0)
+shape = SubResource("BoxShape3D_nh5p0")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="HardSurface/CollisionShape3D"]
+material_override = SubResource("StandardMaterial3D_vbkge")
+mesh = SubResource("PlaneMesh_ahoup")
+
+[node name="CollisionShape3D2" type="CollisionShape3D" parent="HardSurface"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 250)
+shape = SubResource("BoxShape3D_ahoup")
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="HardSurface/CollisionShape3D2"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, -2.5)
+material_override = SubResource("StandardMaterial3D_xy7d5")
+mesh = SubResource("PlaneMesh_vbkge")
+skeleton = NodePath("../../CollisionShape3D")
+
+[node name="CollisionShape3D3" type="CollisionShape3D" parent="HardSurface"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -250)
+shape = SubResource("BoxShape3D_ahoup")
+
+[node name="MeshInstance3D3" type="MeshInstance3D" parent="HardSurface/CollisionShape3D3"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 2.5)
+material_override = SubResource("StandardMaterial3D_og8sx")
+mesh = SubResource("PlaneMesh_vbkge")
+skeleton = NodePath("../../CollisionShape3D")
+
+[node name="CollisionShape3D4" type="CollisionShape3D" parent="HardSurface"]
+transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, -250, 0, -1.09278e-05)
+shape = SubResource("BoxShape3D_ahoup")
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="HardSurface/CollisionShape3D4"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, -2.5)
+material_override = SubResource("StandardMaterial3D_u7ydd")
+mesh = SubResource("PlaneMesh_vbkge")
+skeleton = NodePath("../../CollisionShape3D")
+
+[node name="CollisionShape3D5" type="CollisionShape3D" parent="HardSurface"]
+transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 250, 0, 1.09278e-05)
+shape = SubResource("BoxShape3D_ahoup")
+
+[node name="MeshInstance3D3" type="MeshInstance3D" parent="HardSurface/CollisionShape3D5"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 2.5)
+material_override = SubResource("StandardMaterial3D_cdrm4")
+mesh = SubResource("PlaneMesh_vbkge")
+skeleton = NodePath("../../CollisionShape3D")

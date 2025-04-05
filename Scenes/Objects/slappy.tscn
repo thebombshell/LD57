@@ -1,0 +1,14 @@
+[gd_scene load_steps=4 format=3 uid="uid://ct3tqi60eog4g"]
+
+[ext_resource type="PackedScene" uid="uid://ds21sirmau7d5" path="res://Models/slappy.glb" id="1_eqbts"]
+[ext_resource type="Script" uid="uid://vlsb1otroa6x" path="res://Scripts/slappy.gd" id="2_v738p"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_enm15"]
+radius = 1.0
+
+[node name="slappy" instance=ExtResource("1_eqbts")]
+script = ExtResource("2_v738p")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." index="2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+shape = SubResource("SphereShape3D_enm15")
