@@ -51,6 +51,6 @@ void fragment() {
 	float lamb = max(dot(normal, vec3(0.0, 1.0, 0.0)), 0.0);
 	float spec = pow(max(dot(R, V), 0.0), 3.0);
 
-	ALBEDO *= color + lamb + spec;
+	ALBEDO *= color + lamb * vec3(.59,.35,.51) + spec * vec3(.59,.35,.51);
 	ALPHA = max(0.5, dist / 250.0) + spec;
 }

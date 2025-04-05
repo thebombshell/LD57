@@ -1,10 +1,15 @@
-[gd_scene load_steps=17 format=3 uid="uid://bohnk0v8c2sb7"]
+[gd_scene load_steps=28 format=3 uid="uid://bohnk0v8c2sb7"]
 
 [ext_resource type="PackedScene" uid="uid://ct3tqi60eog4g" path="res://Scenes/Objects/slappy.tscn" id="1_nh5p0"]
 [ext_resource type="PackedScene" uid="uid://dp5b53jpyngdr" path="res://Scenes/Objects/follow_camera.tscn" id="2_nh5p0"]
 [ext_resource type="Texture2D" uid="uid://iim4civdbn6c" path="res://Textures/test_grid.png" id="3_ahoup"]
 [ext_resource type="Material" uid="uid://s28r5trsxd3j" path="res://Shaders/water_surface_mat.tres" id="4_vbkge"]
-[ext_resource type="FontFile" uid="uid://rh5y03neik6c" path="res://Textures/font.png" id="5_xy7d5"]
+[ext_resource type="Script" uid="uid://dfscxgebnw604" path="res://Scripts/reaction_label.gd" id="5_u7ydd"]
+[ext_resource type="Material" uid="uid://bc8ndsxnny47b" path="res://Shaders/fish_mat.tres" id="6_rcu24"]
+[ext_resource type="ArrayMesh" uid="uid://csk24y0d0t7fa" path="res://Models/fish_flatter.res" id="6_u7ydd"]
+[ext_resource type="Script" uid="uid://ccbnjgsbwj5ck" path="res://Scripts/fish_manager.gd" id="7_cdrm4"]
+[ext_resource type="ArrayMesh" uid="uid://ckqvfxmfg2vbk" path="res://Models/fish_wriggler.res" id="8_nab8s"]
+[ext_resource type="ArrayMesh" uid="uid://cw3igfscxwtut" path="res://Models/fish_spinner.res" id="9_rcu24"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_nh5p0"]
 size = Vector3(500, 5, 500)
@@ -34,19 +39,50 @@ albedo_texture = ExtResource("3_ahoup")
 albedo_texture = ExtResource("3_ahoup")
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_vbkge"]
-size = Vector3(500, 50, 500)
+size = Vector3(5000, 50, 5000)
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_xy7d5"]
-size = Vector2(500, 500)
+size = Vector2(5000, 5000)
 subdivide_width = 128
 subdivide_depth = 128
 
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_nab8s"]
+sky_top_color = Color(0.597725, 0.356195, 0.513166, 1)
+sky_horizon_color = Color(0.740398, 0.641635, 0.456484, 1)
+ground_bottom_color = Color(0.124321, 0.248607, 0.408513, 1)
+ground_horizon_color = Color(0.472014, 0.679466, 0.853593, 1)
+
+[sub_resource type="Sky" id="Sky_rcu24"]
+sky_material = SubResource("ProceduralSkyMaterial_nab8s")
+
+[sub_resource type="Environment" id="Environment_1n328"]
+background_mode = 2
+sky = SubResource("Sky_rcu24")
+ambient_light_source = 3
+
+[sub_resource type="MultiMesh" id="MultiMesh_nab8s"]
+transform_format = 1
+use_colors = true
+mesh = ExtResource("6_u7ydd")
+
+[sub_resource type="MultiMesh" id="MultiMesh_1n328"]
+transform_format = 1
+use_colors = true
+mesh = ExtResource("8_nab8s")
+
+[sub_resource type="MultiMesh" id="MultiMesh_hhq76"]
+transform_format = 1
+use_colors = true
+mesh = ExtResource("9_rcu24")
+
 [node name="Game" type="Node3D"]
 
-[node name="slappy" parent="." node_paths=PackedStringArray("camera", "depth_label") instance=ExtResource("1_nh5p0")]
+[node name="slappy" parent="." node_paths=PackedStringArray("camera", "depth_label", "score_label", "message_label") instance=ExtResource("1_nh5p0")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5, 0)
 camera = NodePath("../follow_camera")
-depth_label = NodePath("../follow_camera/CanvasLayer/Control/Label")
+depth_label = NodePath("../follow_camera/CanvasLayer/Control/Depth")
+score_label = NodePath("../follow_camera/CanvasLayer/Control/Score")
+message_label = NodePath("../follow_camera/CanvasLayer/Control/ScoreComment")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 0.258819, 0.965926, 0, -0.965926, 0.258819, 0, 0, 0)
@@ -57,7 +93,7 @@ shadow_enabled = true
 collision_layer = 8
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="HardSurface"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -50, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -25, 0)
 shape = SubResource("BoxShape3D_nh5p0")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="HardSurface/CollisionShape3D"]
@@ -118,6 +154,7 @@ cast_shadow = 0
 mesh = SubResource("PlaneMesh_xy7d5")
 
 [node name="follow_camera" parent="." instance=ExtResource("2_nh5p0")]
+environment = SubResource("Environment_1n328")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="follow_camera"]
 
@@ -129,7 +166,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="Label" type="Label" parent="follow_camera/CanvasLayer/Control"]
+[node name="Depth" type="Label" parent="follow_camera/CanvasLayer/Control"]
 layout_mode = 1
 anchors_preset = -1
 anchor_top = 1.0
@@ -137,7 +174,64 @@ anchor_bottom = 1.0
 offset_left = 16.0
 offset_bottom = -16.0
 grow_vertical = 0
-theme_override_constants/outline_size = 2
-theme_override_fonts/font = ExtResource("5_xy7d5")
+pivot_offset = Vector2(115, 32)
 text = "DEPTH:000.00M"
 vertical_alignment = 2
+script = ExtResource("5_u7ydd")
+
+[node name="Score" type="Label" parent="follow_camera/CanvasLayer/Control"]
+layout_mode = 1
+anchors_preset = -1
+offset_left = 16.0
+offset_top = 16.0
+pivot_offset = Vector2(106, 12)
+text = "SCORE:000000"
+script = ExtResource("5_u7ydd")
+
+[node name="ScoreComment" type="Label" parent="follow_camera/CanvasLayer/Control"]
+layout_mode = 1
+anchors_preset = -1
+offset_left = 16.0
+offset_top = 40.0
+pivot_offset = Vector2(32, 12)
+text = "???"
+script = ExtResource("5_u7ydd")
+
+[node name="MultiMeshInstance3D" type="MultiMeshInstance3D" parent="."]
+visible = false
+material_override = ExtResource("6_rcu24")
+multimesh = SubResource("MultiMesh_nab8s")
+script = ExtResource("7_cdrm4")
+COUNT = 400
+separation_range = 25.0
+separation = 2.0
+alignment = 0.5
+
+[node name="MultiMeshInstance3D2" type="MultiMeshInstance3D" parent="."]
+visible = false
+material_override = ExtResource("6_rcu24")
+multimesh = SubResource("MultiMesh_1n328")
+script = ExtResource("7_cdrm4")
+COUNT = 200
+base_score = 200
+fish_name = "WRIGGLER"
+separation_range = 25.0
+separation = 1.5
+alignment = 0.5
+top = -6.0
+bot = -22.0
+
+[node name="MultiMeshInstance3D3" type="MultiMeshInstance3D" parent="."]
+visible = false
+material_override = ExtResource("6_rcu24")
+multimesh = SubResource("MultiMesh_hhq76")
+script = ExtResource("7_cdrm4")
+COUNT = 100
+base_score = 400
+fish_name = "SPINNER"
+separation_range = 40.0
+separation = 3.0
+alignment = 0.2
+cohesion = 0.5
+top = -10.0
+bot = -22.0

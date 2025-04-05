@@ -6,10 +6,14 @@ const MASK_WATER = 4;
 const MASK_GROUND = 8;
 const MASK_UNDERWATER = 16;
 
+static var current : Slappy = null;
+
 @onready var animation_player: AnimationPlayer = $AnimationPlayer;
 
 @export var camera : Camera3D = null;
 @export var depth_label : Label = null;
+@export var score_label : Label = null;
+@export var message_label : Label = null;
 
 var input_prev = {
 	"move": Vector2.ZERO,
@@ -38,7 +42,66 @@ var air_drag : float = 0.05;
 var ground_drag : float = 0.1;
 var no_input_timer = 0.0;
 var under_water_timer = 0.0;
+var out_of_water_tiemr = 0.0;
 var swim_boost_timer = 0.0;
+
+var catch_manager : FishManager = null;
+var catch_index : int = -1;
+var catch_size : int = -1;
+
+var current_score : int = 0;
+
+func try_catch(t_manager : FishManager, t_index : int) -> bool:
+	
+	var size = t_manager.sizes[t_index];
+	if size > catch_size:
+		if catch_manager != null && catch_index >= 0:
+			catch_manager.spawn(catch_index);
+		catch_manager = t_manager;
+		catch_index = t_index;
+		catch_size = size;
+		return true;
+	return false;
+
+func score():
+	
+	if catch_manager == null || catch_index < 0 || catch_size < 0:
+		return;
+	
+	const COLOR = [
+		Color.WHITE,
+		Color.LIGHT_YELLOW,
+		Color.GREEN_YELLOW,
+		Color.DARK_TURQUOISE,
+		Color.WEB_PURPLE
+	];
+	
+	var message = "???";
+	match catch_size:
+		0: message = "OK " + catch_manager.fish_name + "!";
+		1: message = "NICE " + catch_manager.fish_name + "!";
+		2: message = "GREAT " + catch_manager.fish_name + "!";
+		3: message = "AMAZING " + catch_manager.fish_name + "!";
+		4: message = "TASTY " + catch_manager.fish_name + "!!!";
+	var worth = floori(catch_manager.base_score * FishManager.SIZE_CHART[catch_size]);
+	
+	current_score += worth;
+	
+	score_label.text = "SCORE:%06d" % current_score;
+	score_label.wiggle();
+	message_label.text = message;
+	message_label.modulate = COLOR[catch_size];
+	message_label.scaler();
+	message_label.wiggle();
+	message_label.fade();
+	
+	catch_manager.impulse();
+	catch_manager.spawn(catch_index);
+	catch_manager = null;
+	catch_index = -1;
+	catch_size = 0.0;
+	
+	return;
 
 func handle_forces(t_delta : float):
 	
@@ -94,7 +157,7 @@ func control_diving(t_delta : float) -> void:
 			velocity += modified_input * acceleration * t_delta * 0.5;
 		if global_position.y < max_depth:
 			max_depth = global_position.y;
-		var dive_mod = min(1.0, 0.05 * under_water_timer) if input_curr.dive else 1.0;
+		var dive_mod = min(1.0, 0.015 * under_water_timer) if input_curr.dive else 1.0;
 		velocity += Vector3(0.0, 12.0, 0.0) * max(1.0, abs(max_depth) * dive_mod) * t_delta;
 		
 	elif has_dived:
@@ -110,6 +173,10 @@ func control_running(t_delta : float) -> void:
 	
 	if camera == null:
 		return;
+	
+	out_of_water_tiemr += t_delta;
+	if out_of_water_tiemr > 1.5:
+		score();
 	
 	var is_inputting = false;
 	var modified_input = Vector3.ZERO;
@@ -150,6 +217,7 @@ func control_running(t_delta : float) -> void:
 
 func dive():
 	
+	score();
 	max_depth = 0.0;
 	under_water_timer = 0.0;
 	is_diving = true;
@@ -168,6 +236,7 @@ func dive():
 
 func breach():
 	
+	out_of_water_tiemr = 0.0;
 	is_diving = false;
 	collision_mask |= MASK_WATER;
 	collision_mask &= ~MASK_UNDERWATER;
@@ -227,6 +296,11 @@ func process_camera(t_delta : float) -> void:
 	if camera.global_position.y < 0.0 && global_position.y > 0.0:
 		camera.global_position += Vector3.UP * t_delta;
 	
+	return;
+
+func _ready():
+	
+	current = self;
 	return;
 
 func _process(t_delta: float) -> void:
