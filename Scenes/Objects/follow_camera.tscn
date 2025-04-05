@@ -1,9 +1,21 @@
-[gd_scene load_steps=2 format=3 uid="uid://dp5b53jpyngdr"]
+[gd_scene load_steps=4 format=3 uid="uid://dp5b53jpyngdr"]
 
 [ext_resource type="Script" uid="uid://cl80qvsxt0k1h" path="res://Scripts/follow_camera.gd" id="1_ccn2c"]
+[ext_resource type="Material" uid="uid://cifyhukntr37t" path="res://Shaders/water_under_mat.tres" id="2_50owp"]
 
-[node name="follow_camera" type="Camera3D" node_paths=PackedStringArray("target")]
-transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 0, 0)
+[sub_resource type="QuadMesh" id="QuadMesh_xyirj"]
+material = ExtResource("2_50owp")
+flip_faces = true
+size = Vector2(2, 2)
+
+[node name="follow_camera" type="Camera3D"]
 fov = 90.0
 script = ExtResource("1_ccn2c")
-target = NodePath("")
+
+[node name="UnderwaterEffect" type="MeshInstance3D" parent="."]
+transform = Transform3D(-1, 0, 1.50996e-07, 0, 1, 0, -1.50996e-07, 0, -1, 4.52988e-07, -2, -3)
+visible = false
+cast_shadow = 0
+extra_cull_margin = 16384.0
+mesh = SubResource("QuadMesh_xyirj")
+skeleton = NodePath("../..")

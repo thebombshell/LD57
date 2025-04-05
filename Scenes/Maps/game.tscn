@@ -46,10 +46,6 @@ subdivide_depth = 128
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5, 0)
 camera = NodePath("../follow_camera")
 
-[node name="follow_camera" parent="." instance=ExtResource("2_nh5p0")]
-transform = Transform3D(-1, 0, -1.50996e-07, 0, 1, 0, 1.50996e-07, 0, -1, 0, 2, -3)
-script = null
-
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 0.258819, 0.965926, 0, -0.965926, 0.258819, 0, 0, 0)
 light_bake_mode = 0
@@ -118,3 +114,5 @@ debug_color = Color(1, 0.6, 0.701961, 0.419608)
 material_override = ExtResource("4_vbkge")
 cast_shadow = 0
 mesh = SubResource("PlaneMesh_xy7d5")
+
+[node name="follow_camera" parent="." instance=ExtResource("2_nh5p0")]
