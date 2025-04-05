@@ -1,0 +1,10 @@
+[gd_resource type="AudioStreamRandomizer" load_steps=2 format=3 uid="uid://dyroikat66dvm"]
+
+[ext_resource type="AudioStream" uid="uid://yd4ld2y6y6ci" path="res://Sounds/splash_001.wav" id="1_5lg5v"]
+
+[resource]
+playback_mode = 1
+random_pitch = 1.2
+random_volume_offset_db = 2.0
+streams_count = 1
+stream_0/stream = ExtResource("1_5lg5v")

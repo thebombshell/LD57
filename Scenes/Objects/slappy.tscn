@@ -1,7 +1,9 @@
-[gd_scene load_steps=4 format=3 uid="uid://ct3tqi60eog4g"]
+[gd_scene load_steps=6 format=3 uid="uid://ct3tqi60eog4g"]
 
 [ext_resource type="PackedScene" uid="uid://ds21sirmau7d5" path="res://Models/slappy.glb" id="1_eqbts"]
 [ext_resource type="Script" uid="uid://vlsb1otroa6x" path="res://Scripts/slappy.gd" id="2_v738p"]
+[ext_resource type="AudioStream" uid="uid://bl8cejys1p4bj" path="res://Sounds/dive_sound.wav" id="3_enm15"]
+[ext_resource type="AudioStream" uid="uid://b6doj53up4ndv" path="res://Sounds/breach_randomizer.tres" id="3_ja2u1"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_enm15"]
 radius = 1.0
@@ -10,6 +12,35 @@ radius = 1.0
 collision_mask = 15
 script = ExtResource("2_v738p")
 
+[node name="Skeleton3D" parent="Armature" index="0"]
+bones/1/position = Vector3(-1.30251e-07, 0.0563075, -0.714586)
+bones/1/rotation = Quaternion(0.949606, -2.36645e-08, -7.16933e-08, -0.313446)
+bones/2/rotation = Quaternion(0.779477, -0.00418963, 0.129234, 0.612942)
+bones/3/rotation = Quaternion(-0.0693308, -0.104852, -0.10134, 0.986879)
+bones/4/rotation = Quaternion(0.496313, -0.000168236, 0.000555661, 0.868143)
+bones/7/rotation = Quaternion(-0.114078, 0.00112658, 0.00319001, 0.993466)
+bones/8/rotation = Quaternion(0.0689732, 0.000965406, -0.0161339, 0.997488)
+bones/9/rotation = Quaternion(-0.773701, -0.538499, -0.106253, 0.316413)
+bones/10/rotation = Quaternion(-0.0129092, 0.847016, -0.506824, 0.159774)
+bones/11/rotation = Quaternion(-0.836384, 0.0917552, 0.0329474, 0.539404)
+bones/12/rotation = Quaternion(-0.0411924, 0.745425, -0.649361, -0.144824)
+
 [node name="CollisionShape3D" type="CollisionShape3D" parent="." index="2"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 shape = SubResource("SphereShape3D_enm15")
+
+[node name="SlappyFootsteps" type="AudioStreamPlayer3D" parent="." index="3"]
+volume_db = -5.0
+max_polyphony = 3
+
+[node name="SlappySploosh" type="AudioStreamPlayer3D" parent="." index="4"]
+volume_db = -5.0
+pitch_scale = 0.7
+
+[node name="SlappyBreach" type="AudioStreamPlayer3D" parent="." index="5"]
+stream = ExtResource("3_ja2u1")
+volume_db = -5.0
+max_polyphony = 2
+
+[node name="DiveSound" type="AudioStreamPlayer3D" parent="." index="6"]
+stream = ExtResource("3_enm15")

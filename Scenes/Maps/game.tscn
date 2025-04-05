@@ -5,7 +5,7 @@
 [ext_resource type="Texture2D" uid="uid://iim4civdbn6c" path="res://Textures/test_grid.png" id="3_ahoup"]
 [ext_resource type="Material" uid="uid://s28r5trsxd3j" path="res://Shaders/water_surface_mat.tres" id="4_vbkge"]
 [ext_resource type="Script" uid="uid://dfscxgebnw604" path="res://Scripts/reaction_label.gd" id="5_u7ydd"]
-[ext_resource type="Material" uid="uid://bc8ndsxnny47b" path="res://Shaders/fish_mat.tres" id="6_rcu24"]
+[ext_resource type="Material" uid="uid://m5uu7x5n608b" path="res://Shaders/fish_mat_x.tres" id="6_1n328"]
 [ext_resource type="ArrayMesh" uid="uid://csk24y0d0t7fa" path="res://Models/fish_flatter.res" id="6_u7ydd"]
 [ext_resource type="Script" uid="uid://ccbnjgsbwj5ck" path="res://Scripts/fish_manager.gd" id="7_cdrm4"]
 [ext_resource type="ArrayMesh" uid="uid://ckqvfxmfg2vbk" path="res://Models/fish_wriggler.res" id="8_nab8s"]
@@ -77,12 +77,14 @@ mesh = ExtResource("9_rcu24")
 
 [node name="Game" type="Node3D"]
 
-[node name="slappy" parent="." node_paths=PackedStringArray("camera", "depth_label", "score_label", "message_label") instance=ExtResource("1_nh5p0")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5, 0)
+[node name="slappy" parent="." node_paths=PackedStringArray("camera", "depth_label", "score_label", "message_label", "timer_label", "time_bar") instance=ExtResource("1_nh5p0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 camera = NodePath("../follow_camera")
 depth_label = NodePath("../follow_camera/CanvasLayer/Control/Depth")
 score_label = NodePath("../follow_camera/CanvasLayer/Control/Score")
 message_label = NodePath("../follow_camera/CanvasLayer/Control/ScoreComment")
+timer_label = NodePath("../follow_camera/CanvasLayer/Control/Timer")
+time_bar = NodePath("../follow_camera/CanvasLayer/Control/TimeBar")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 0.258819, 0.965926, 0, -0.965926, 0.258819, 0, 0, 0)
@@ -197,9 +199,32 @@ pivot_offset = Vector2(32, 12)
 text = "???"
 script = ExtResource("5_u7ydd")
 
+[node name="Timer" type="Label" parent="follow_camera/CanvasLayer/Control"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -128.0
+offset_top = 16.0
+offset_right = -24.0
+grow_horizontal = 0
+pivot_offset = Vector2(32, 12)
+text = "01:30"
+script = ExtResource("5_u7ydd")
+
+[node name="TimeBar" type="ProgressBar" parent="follow_camera/CanvasLayer/Control"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -24.0
+fill_mode = 3
+show_percentage = false
+
 [node name="MultiMeshInstance3D" type="MultiMeshInstance3D" parent="."]
 visible = false
-material_override = ExtResource("6_rcu24")
+material_override = ExtResource("6_1n328")
 multimesh = SubResource("MultiMesh_nab8s")
 script = ExtResource("7_cdrm4")
 COUNT = 400
@@ -209,7 +234,7 @@ alignment = 0.5
 
 [node name="MultiMeshInstance3D2" type="MultiMeshInstance3D" parent="."]
 visible = false
-material_override = ExtResource("6_rcu24")
+material_override = ExtResource("6_1n328")
 multimesh = SubResource("MultiMesh_1n328")
 script = ExtResource("7_cdrm4")
 COUNT = 200
@@ -223,7 +248,7 @@ bot = -22.0
 
 [node name="MultiMeshInstance3D3" type="MultiMeshInstance3D" parent="."]
 visible = false
-material_override = ExtResource("6_rcu24")
+material_override = ExtResource("6_1n328")
 multimesh = SubResource("MultiMesh_hhq76")
 script = ExtResource("7_cdrm4")
 COUNT = 100

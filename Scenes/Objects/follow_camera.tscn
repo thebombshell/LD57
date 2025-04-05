@@ -19,3 +19,5 @@ cast_shadow = 0
 extra_cull_margin = 16384.0
 mesh = SubResource("QuadMesh_xyirj")
 skeleton = NodePath("../..")
+
+[node name="AudioListener3D" type="AudioListener3D" parent="."]

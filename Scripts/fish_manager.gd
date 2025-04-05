@@ -34,7 +34,7 @@ var sizes : PackedInt32Array = [];
 @export var top : float = -4.0;
 @export var bot : float = -20.0;
 @export var height_adherence : float = 3.0;
-@export var speed : float = 10.0;
+@export var top_speed : float = 20.0;
 
 var impulse_timer = 0.0;
 var caught = -1;
@@ -132,9 +132,9 @@ func update(t_index : int, t_delta : float):
 		if Slappy.current != null:
 			
 			var diff = t_position - Slappy.current.global_position;
-			if diff.length() < 10.0:
-				close += diff;
-			if diff.length() < 3.0:
+			if diff.length() < 25.0 && Slappy.current.global_position.y < -5.0:
+				close -= diff * 0.5;
+			if diff.length() < 5.0 && Slappy.current.global_position.y < 0.0:
 				if Slappy.current.try_catch(self, t_index):
 					map_remove(t_index);
 					caught = t_index;
@@ -160,10 +160,11 @@ func update(t_index : int, t_delta : float):
 		velocity += (center - t_position) * cohesion * t_delta;
 		velocity = lerp(velocity, align, alignment * t_delta);
 		if t_position.length() > 225.0:
-			velocity = -t_position.normalized() * speed;
+			velocity -= t_position.normalized() * top_speed * t_delta;
 	
+	var speed = velocity.length();
 	positions[t_index] += velocity * t_delta;
-	velocities[t_index] = velocity;
+	velocities[t_index] = (velocity.normalized() * top_speed) if speed > top_speed else velocity;
 	
 	map_push(t_index);
 	

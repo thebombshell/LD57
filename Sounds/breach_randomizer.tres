@@ -1,0 +1,9 @@
+[gd_resource type="AudioStreamRandomizer" load_steps=2 format=3 uid="uid://b6doj53up4ndv"]
+
+[ext_resource type="AudioStream" uid="uid://ptc0j0pl6ly1" path="res://Sounds/splash_mod_003.wav" id="2_wfbuu"]
+
+[resource]
+random_pitch = 1.1
+random_volume_offset_db = 3.0
+streams_count = 1
+stream_0/stream = ExtResource("2_wfbuu")
