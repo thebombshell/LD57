@@ -277,7 +277,7 @@ func _physics_process(t_delta: float) -> void:
 	input_curr.jump = Input.is_action_pressed("jump");
 	input_curr.dive = Input.is_action_pressed("dive");
 	
-	if Input.is_action_just_pressed("dive"):
+	if !is_underwater && Input.is_action_just_pressed("dive"):
 		if is_on_floor():
 			velocity.y = 10.0;
 		dive();

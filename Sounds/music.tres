@@ -1,0 +1,8 @@
+[gd_resource type="AudioStreamSynchronized" load_steps=2 format=3 uid="uid://fyjiqqewb843"]
+
+[ext_resource type="AudioStream" uid="uid://6253nx02sbdc" path="res://Sounds/music_1.wav" id="1_1yc1a"]
+
+[resource]
+stream_count = 1
+stream_0/stream = ExtResource("1_1yc1a")
+stream_0/volume = 0.0
