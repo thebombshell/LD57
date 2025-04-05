@@ -1,0 +1,11 @@
+[gd_resource type="ShaderMaterial" load_steps=3 format=3 uid="uid://s28r5trsxd3j"]
+
+[ext_resource type="Shader" uid="uid://8vmrpaio1tiv" path="res://Shaders/water_surface.gdshader" id="1_0wn3t"]
+[ext_resource type="Texture2D" uid="uid://nqaiv55iwaue" path="res://Textures/noiseTexture.png" id="2_5bh7c"]
+
+[resource]
+render_priority = 0
+shader = ExtResource("1_0wn3t")
+shader_parameter/color = Color(0, 0.780392, 0.603922, 1)
+shader_parameter/noise_scaling = 0.01
+shader_parameter/noise = ExtResource("2_5bh7c")

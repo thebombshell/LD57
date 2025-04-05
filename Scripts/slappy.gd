@@ -25,6 +25,7 @@ var jump_speed_boost : float = 1.0;
 var air_drag : float = 0.05;
 var ground_drag : float = 0.1;
 var no_input_timer = 0.0;
+var is_inside_water_timer = 0.0;
 
 func handle_forces(t_delta : float):
 	
@@ -39,6 +40,9 @@ func handle_forces(t_delta : float):
 
 func control_diving(t_delta : float) -> void:
 	
+	if camera == null:
+		return;
+	
 	return;
 
 func control_running(t_delta : float) -> void:
@@ -46,29 +50,39 @@ func control_running(t_delta : float) -> void:
 	if camera == null:
 		return;
 	
+	var is_inputting = false;
+	var modified_input = Vector3.ZERO;
+	var input_direction = Vector3.FORWARD;
+	
 	if input_curr.move.length() > 0.1:
 		
 		no_input_timer = 0.0;
-		var modified_input = camera.transform.basis * Vector3(input_curr.move.x, 0.0, -input_curr.move.y);
+		is_inputting = true;
+		modified_input = camera.transform.basis * Vector3(input_curr.move.x, 0.0, -input_curr.move.y);
 		modified_input.y = 0.0;
-		var dir = modified_input.normalized();
-		forward = dir;
-		
-		velocity += modified_input * acceleration * t_delta * (1.0 if is_on_floor() else 0.5);
-		if is_on_floor():
-			animation_player.play("run");
+		input_direction = modified_input.normalized();
 	else:
 		no_input_timer += t_delta;
-		
-		if is_on_floor():
+	
+	if is_on_floor():
+		if is_inputting:
+			velocity += modified_input * acceleration * t_delta * 1.0;
+			animation_player.play("run");
+			forward = input_direction;
+		else:
 			animation_player.play("idle");
+			
+	else:
+		if is_inputting:
+			velocity += modified_input * acceleration * t_delta * 0.5;
+		animation_player.play("jump");
+		animation_player.pause();
+		animation_player.seek(smoothstep(10.0, -10.0, velocity.y), true);
 	
 	if is_on_floor() && Input.is_action_just_pressed("jump"):
 		
 		var boost = velocity.length();
 		velocity.y = jump_power + boost * jump_speed_boost;
-		animation_player.play("jump");
-	
 	global_basis = global_basis.slerp(Basis(Vector3.UP.cross(forward), Vector3.UP, forward), 8.0 * t_delta);
 	return;
 

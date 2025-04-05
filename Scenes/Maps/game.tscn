@@ -1,8 +1,9 @@
-[gd_scene load_steps=13 format=3 uid="uid://bohnk0v8c2sb7"]
+[gd_scene load_steps=16 format=3 uid="uid://bohnk0v8c2sb7"]
 
 [ext_resource type="PackedScene" uid="uid://ct3tqi60eog4g" path="res://Scenes/Objects/slappy.tscn" id="1_nh5p0"]
 [ext_resource type="PackedScene" uid="uid://dp5b53jpyngdr" path="res://Scenes/Objects/follow_camera.tscn" id="2_nh5p0"]
 [ext_resource type="Texture2D" uid="uid://iim4civdbn6c" path="res://Textures/test_grid.png" id="3_ahoup"]
+[ext_resource type="Material" uid="uid://s28r5trsxd3j" path="res://Shaders/water_surface_mat.tres" id="4_vbkge"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_nh5p0"]
 size = Vector3(500, 5, 500)
@@ -20,7 +21,7 @@ size = Vector3(500, 100, 5)
 albedo_texture = ExtResource("3_ahoup")
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_vbkge"]
-size = Vector2(500, 100)
+size = Vector2(500, 50)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_og8sx"]
 albedo_texture = ExtResource("3_ahoup")
@@ -31,9 +32,18 @@ albedo_texture = ExtResource("3_ahoup")
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_cdrm4"]
 albedo_texture = ExtResource("3_ahoup")
 
+[sub_resource type="BoxShape3D" id="BoxShape3D_vbkge"]
+size = Vector3(500, 50, 500)
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_xy7d5"]
+size = Vector2(500, 500)
+subdivide_width = 128
+subdivide_depth = 128
+
 [node name="Game" type="Node3D"]
 
 [node name="slappy" parent="." node_paths=PackedStringArray("camera") instance=ExtResource("1_nh5p0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5, 0)
 camera = NodePath("../follow_camera")
 
 [node name="follow_camera" parent="." instance=ExtResource("2_nh5p0")]
@@ -42,8 +52,11 @@ script = null
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 0.258819, 0.965926, 0, -0.965926, 0.258819, 0, 0, 0)
+light_bake_mode = 0
+shadow_enabled = true
 
 [node name="HardSurface" type="StaticBody3D" parent="."]
+collision_layer = 8
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="HardSurface"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -50, 0)
@@ -58,7 +71,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 250)
 shape = SubResource("BoxShape3D_ahoup")
 
 [node name="MeshInstance3D2" type="MeshInstance3D" parent="HardSurface/CollisionShape3D2"]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, -2.5)
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, -25, -2.5)
 material_override = SubResource("StandardMaterial3D_xy7d5")
 mesh = SubResource("PlaneMesh_vbkge")
 skeleton = NodePath("../../CollisionShape3D")
@@ -68,7 +81,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -250)
 shape = SubResource("BoxShape3D_ahoup")
 
 [node name="MeshInstance3D3" type="MeshInstance3D" parent="HardSurface/CollisionShape3D3"]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 2.5)
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, -25, 2.5)
 material_override = SubResource("StandardMaterial3D_og8sx")
 mesh = SubResource("PlaneMesh_vbkge")
 skeleton = NodePath("../../CollisionShape3D")
@@ -78,7 +91,7 @@ transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, -250, 
 shape = SubResource("BoxShape3D_ahoup")
 
 [node name="MeshInstance3D2" type="MeshInstance3D" parent="HardSurface/CollisionShape3D4"]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, -2.5)
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, -25, -2.5)
 material_override = SubResource("StandardMaterial3D_u7ydd")
 mesh = SubResource("PlaneMesh_vbkge")
 skeleton = NodePath("../../CollisionShape3D")
@@ -88,7 +101,20 @@ transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 250, 0
 shape = SubResource("BoxShape3D_ahoup")
 
 [node name="MeshInstance3D3" type="MeshInstance3D" parent="HardSurface/CollisionShape3D5"]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 2.5)
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, -25, 2.5)
 material_override = SubResource("StandardMaterial3D_cdrm4")
 mesh = SubResource("PlaneMesh_vbkge")
 skeleton = NodePath("../../CollisionShape3D")
+
+[node name="Water" type="StaticBody3D" parent="."]
+collision_layer = 4
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Water"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -25, 0)
+shape = SubResource("BoxShape3D_vbkge")
+debug_color = Color(1, 0.6, 0.701961, 0.419608)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Water"]
+material_override = ExtResource("4_vbkge")
+cast_shadow = 0
+mesh = SubResource("PlaneMesh_xy7d5")

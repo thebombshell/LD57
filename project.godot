@@ -53,6 +53,13 @@ dive={
 ]
 }
 
+[layer_names]
+
+3d_physics/layer_1="Slappy"
+3d_physics/layer_2="Bits"
+3d_physics/layer_3="Water"
+3d_physics/layer_4="Ground"
+
 [physics]
 
 3d/physics_engine="Jolt Physics"
