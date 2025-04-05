@@ -9,6 +9,7 @@ const MASK_UNDERWATER = 16;
 @onready var animation_player: AnimationPlayer = $AnimationPlayer;
 
 @export var camera : Camera3D = null;
+@export var depth_label : Label = null;
 
 var input_prev = {
 	"move": Vector2.ZERO,
@@ -26,6 +27,8 @@ var input_curr = {
 var is_diving = false;
 var has_dived = false;
 var is_underwater = false;
+var is_tricking = false;
+
 var max_depth = 0.0;
 var forward : Vector3 = Vector3(0.0, 0.0, 1.0);
 var acceleration : float = 60.0;
@@ -35,6 +38,7 @@ var air_drag : float = 0.05;
 var ground_drag : float = 0.1;
 var no_input_timer = 0.0;
 var under_water_timer = 0.0;
+var swim_boost_timer = 0.0;
 
 func handle_forces(t_delta : float):
 	
@@ -69,7 +73,22 @@ func control_diving(t_delta : float) -> void:
 	
 	if is_underwater:
 		
-		has_dived = true;
+		if !has_dived:
+			animation_player.play("swim", 0.5);
+			has_dived = true;
+			is_tricking = false;
+			swim_boost_timer = 0.0;
+		
+		if swim_boost_timer <= 0.0:
+			if Input.is_action_just_pressed("jump"):
+				swim_boost_timer += t_delta;
+				animation_player.play("swim_trick", 0.2);
+				animation_player.queue("swim");
+		else:
+			swim_boost_timer += t_delta;
+			var speed = velocity.length();
+			velocity += Vector3(velocity.x, 0.0, velocity.y).normalized() * speed * t_delta * max(0.0, 1.0 - swim_boost_timer);
+		
 		under_water_timer += t_delta;
 		if is_inputting:
 			velocity += modified_input * acceleration * t_delta * 0.5;
@@ -77,10 +96,11 @@ func control_diving(t_delta : float) -> void:
 			max_depth = global_position.y;
 		var dive_mod = min(1.0, 0.05 * under_water_timer) if input_curr.dive else 1.0;
 		velocity += Vector3(0.0, 12.0, 0.0) * max(1.0, abs(max_depth) * dive_mod) * t_delta;
+		
 	elif has_dived:
 		breach();
 	else:
-		velocity += get_gravity() * 4.0 * t_delta;
+		velocity += get_gravity() * (8.0 if is_tricking else 4.0) * t_delta;
 	
 	var dir = velocity.normalized();
 	global_basis = global_basis.slerp(Basis.looking_at(-dir), 8.0 * t_delta);
@@ -134,7 +154,14 @@ func dive():
 	under_water_timer = 0.0;
 	is_diving = true;
 	has_dived = false;
-	animation_player.play("dive", 0.5);
+	if velocity.y > -2.0 && velocity.y < 2.0:
+		
+		velocity.y = 40.0;
+		animation_player.play("jump_trick", 0.5);
+		animation_player.queue("dive");
+		is_tricking = true;
+	else:
+		animation_player.play("dive", 0.5);
 	collision_mask &= ~MASK_WATER;
 	collision_mask |= MASK_UNDERWATER;
 	return;
@@ -157,6 +184,8 @@ func _physics_process(t_delta: float) -> void:
 	input_curr.dive = Input.is_action_pressed("dive");
 	
 	if Input.is_action_just_pressed("dive"):
+		if is_on_floor():
+			velocity.y = 10.0;
 		dive();
 	
 	handle_forces(t_delta);
@@ -168,6 +197,12 @@ func _physics_process(t_delta: float) -> void:
 	move_and_slide();
 	return;
 
+func process_ui() -> void:
+	
+	const format = "DEPTH:%03.2fM";
+	if depth_label != null:
+		depth_label.text = format % max_depth;
+	return;
 
 func process_camera(t_delta : float) -> void:
 	
@@ -189,9 +224,13 @@ func process_camera(t_delta : float) -> void:
 	else:
 		camera.global_position = camera.global_position.lerp(target_pos, t_delta * 4.0);
 	
+	if camera.global_position.y < 0.0 && global_position.y > 0.0:
+		camera.global_position += Vector3.UP * t_delta;
+	
 	return;
 
 func _process(t_delta: float) -> void:
 	
 	process_camera(t_delta);
+	process_ui();
 	return;

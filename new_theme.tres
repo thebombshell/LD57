@@ -1,0 +1,8 @@
+[gd_resource type="Theme" load_steps=2 format=3 uid="uid://cnxebmvttu68r"]
+
+[ext_resource type="FontFile" uid="uid://rh5y03neik6c" path="res://Textures/font.png" id="1_amlv4"]
+
+[resource]
+Label/colors/font_shadow_color = Color(0, 0, 0, 1)
+Label/constants/shadow_outline_size = 10
+Label/fonts/font = ExtResource("1_amlv4")

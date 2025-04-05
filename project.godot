@@ -20,6 +20,10 @@ config/icon="res://icon.svg"
 window/size/viewport_width=948
 window/size/viewport_height=533
 
+[gui]
+
+theme/custom="uid://cnxebmvttu68r"
+
 [input]
 
 move_fore={
