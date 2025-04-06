@@ -4,7 +4,10 @@ render_mode skip_vertex_transform, fog_disabled;
 
 uniform sampler2D depth_texture : hint_depth_texture;
 
-uniform vec3 color : source_color;
+uniform vec3 shallow_color : source_color;
+uniform vec3 deep_color : source_color;
+uniform float shallow_depth = 200.0;
+uniform float deep_depth = 500.0;
 uniform float noise_scaling = 128.0;
 uniform sampler2D noise;
 
@@ -42,7 +45,7 @@ void fragment() {
 	vec4 world = INV_VIEW_MATRIX * INV_PROJECTION_MATRIX * vec4(ndc, 1.0);
 	vec3 world_position = world.xyz / world.w;
 
-	float dist = length(v_world_position - world_position);
+	float dist = log2(length(v_world_position - world_position));
 	vec3 scaled_world = v_world_position * noise_scaling;
 	vec3 normal = find_normal(v_world_position * noise_scaling);
 
@@ -50,7 +53,8 @@ void fragment() {
 	vec3 V = v_world_position - CAMERA_POSITION_WORLD;
 	float lamb = max(dot(normal, vec3(0.0, 1.0, 0.0)), 0.0);
 	float spec = pow(max(dot(R, V), 0.0), 3.0);
-
+	
+	vec3 color = mix(shallow_color, deep_color, smoothstep(shallow_depth, deep_depth, dist));
+	ALPHA = max(0.35, dist / shallow_depth) + spec;
 	ALBEDO *= color + lamb * vec3(.59,.35,.51) + spec * vec3(.59,.35,.51);
-	ALPHA = max(0.5, dist / 250.0) + spec;
 }

@@ -1,0 +1,8 @@
+[gd_scene load_steps=3 format=3 uid="uid://3eyicnfb78bx"]
+
+[ext_resource type="Material" uid="uid://b2b8yfheuerre" path="res://Shaders/seaweed_material.tres" id="1_wfek4"]
+[ext_resource type="ArrayMesh" uid="uid://ccn84v0ircgrb" path="res://Models/props_Seaweed.res" id="2_gr3dj"]
+
+[node name="seaweed" type="MeshInstance3D"]
+material_override = ExtResource("1_wfek4")
+mesh = ExtResource("2_gr3dj")

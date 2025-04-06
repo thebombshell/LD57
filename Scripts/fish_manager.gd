@@ -87,9 +87,22 @@ func spawn(t_index):
 	if t_index == caught:
 		caught = -1;
 	
+	var x = randf() * 15.0;
+	var s = 0;
+	if x < 5.0:
+		s = 0;
+	elif x < 9.0:
+		s = 1;
+	elif x < 12.0:
+		s = 2;
+	elif x < 14.0:
+		s = 3;
+	else:
+		s = 4;
+	
 	positions[t_index] = Vector3(randf_range(-250.0, 250.0), randf_range(bot, top), randf_range(-250.0, 250.0));
 	velocities[t_index] = Vector3(randf(), 0.0, randf()).normalized() * 20.0;
-	sizes[t_index] = randi_range(0, 4);
+	sizes[t_index] = s;
 	
 	map_push(t_index);
 	
@@ -160,7 +173,8 @@ func update(t_index : int, t_delta : float):
 		velocity += (center - t_position) * cohesion * t_delta;
 		velocity = lerp(velocity, align, alignment * t_delta);
 		if t_position.length() > 225.0:
-			velocity -= t_position.normalized() * top_speed * t_delta;
+			var dist = t_position.length() - 225.0;
+			velocity -= t_position.normalized() * top_speed * dist * 0.25 * t_delta;
 	
 	var speed = velocity.length();
 	positions[t_index] += velocity * t_delta;

@@ -1,12 +1,45 @@
-[gd_scene load_steps=6 format=3 uid="uid://ct3tqi60eog4g"]
+[gd_scene load_steps=12 format=3 uid="uid://ct3tqi60eog4g"]
 
 [ext_resource type="PackedScene" uid="uid://ds21sirmau7d5" path="res://Models/slappy.glb" id="1_eqbts"]
 [ext_resource type="Script" uid="uid://vlsb1otroa6x" path="res://Scripts/slappy.gd" id="2_v738p"]
 [ext_resource type="AudioStream" uid="uid://bl8cejys1p4bj" path="res://Sounds/dive_sound.wav" id="3_enm15"]
 [ext_resource type="AudioStream" uid="uid://b6doj53up4ndv" path="res://Sounds/breach_randomizer.tres" id="3_ja2u1"]
+[ext_resource type="AudioStream" uid="uid://c5n4w77unme3a" path="res://Sounds/trick.wav" id="5_qj5ga"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_enm15"]
 radius = 1.0
+
+[sub_resource type="Curve" id="Curve_ja2u1"]
+_data = [Vector2(0, 0.995642), 0.0, -0.0778358, 0, 0, Vector2(0.985591, 0), -2.85829, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="CurveTexture" id="CurveTexture_qj5ga"]
+texture_mode = 1
+curve = SubResource("Curve_ja2u1")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_08es7"]
+emission_shape = 1
+emission_sphere_radius = 0.5
+direction = Vector3(0, 1, 1)
+spread = 180.0
+initial_velocity_max = 5.0
+gravity = Vector3(0, 2, 0)
+scale_min = 0.1
+scale_max = 0.5
+alpha_curve = SubResource("CurveTexture_qj5ga")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ja2u1"]
+transparency = 1
+blend_mode = 1
+depth_draw_mode = 1
+shading_mode = 0
+vertex_color_use_as_albedo = true
+disable_receive_shadows = true
+
+[sub_resource type="SphereMesh" id="SphereMesh_qj5ga"]
+material = SubResource("StandardMaterial3D_ja2u1")
+radial_segments = 8
+rings = 8
 
 [node name="slappy" instance=ExtResource("1_eqbts")]
 collision_mask = 15
@@ -30,7 +63,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 shape = SubResource("SphereShape3D_enm15")
 
 [node name="SlappyFootsteps" type="AudioStreamPlayer3D" parent="." index="3"]
-volume_db = -5.0
 max_polyphony = 3
 bus = &"SFX"
 
@@ -48,3 +80,24 @@ bus = &"SFX"
 [node name="DiveSound" type="AudioStreamPlayer3D" parent="." index="6"]
 stream = ExtResource("3_enm15")
 bus = &"SFX"
+
+[node name="BubbleParticles" type="GPUParticles3D" parent="." index="7"]
+cast_shadow = 0
+emitting = false
+amount = 40
+process_material = SubResource("ParticleProcessMaterial_08es7")
+draw_pass_1 = SubResource("SphereMesh_qj5ga")
+
+[node name="CelebrateParticles" type="GPUParticles3D" parent="." index="8"]
+cast_shadow = 0
+emitting = false
+amount = 20
+process_material = SubResource("ParticleProcessMaterial_08es7")
+draw_pass_1 = SubResource("SphereMesh_qj5ga")
+
+[node name="ScorePlayer" type="AudioStreamPlayer" parent="." index="9"]
+bus = &"SFX"
+
+[node name="TrickPlayer" type="AudioStreamPlayer" parent="." index="10"]
+stream = ExtResource("5_qj5ga")
+volume_db = -10.0

@@ -1,0 +1,17 @@
+[gd_scene load_steps=4 format=3 uid="uid://xywvc6xujjnc"]
+
+[ext_resource type="Shader" uid="uid://cpha08l65cs8l" path="res://Shaders/seaweed_shader.gdshader" id="1_0r46u"]
+[ext_resource type="ArrayMesh" uid="uid://ccn84v0ircgrb" path="res://Models/props_Seaweed.res" id="2_8ggyh"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_8ggyh"]
+render_priority = 0
+shader = ExtResource("1_0r46u")
+shader_parameter/WIGGLE_SPEED = 1.0
+shader_parameter/WIGGLE_INTENSITY = 1.0
+shader_parameter/WIGGLE_LENGTH = 5.0
+shader_parameter/base_color = Color(0.771169, 0.469952, 0.224279, 1)
+shader_parameter/head_color = Color(0.313726, 0.113725, 0.317647, 1)
+
+[node name="seaweed" type="MeshInstance3D"]
+material_override = SubResource("ShaderMaterial_8ggyh")
+mesh = ExtResource("2_8ggyh")

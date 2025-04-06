@@ -7,8 +7,8 @@
 [resource]
 stream_count = 3
 stream_0/stream = ExtResource("1_1yc1a")
-stream_0/volume = 0.0
+stream_0/volume = -60.0
 stream_1/stream = ExtResource("2_bellc")
 stream_1/volume = -60.0
 stream_2/stream = ExtResource("3_1fdc1")
-stream_2/volume = 0.0
+stream_2/volume = -60.0

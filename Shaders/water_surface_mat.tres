@@ -6,6 +6,9 @@
 [resource]
 render_priority = 0
 shader = ExtResource("1_0wn3t")
-shader_parameter/color = Color(0, 0.780392, 0.603922, 1)
+shader_parameter/shallow_color = Color(0, 0.827451, 0.419608, 1)
+shader_parameter/deep_color = Color(0, 0.152941, 0.231373, 1)
+shader_parameter/shallow_depth = 8.0
+shader_parameter/deep_depth = 16.0
 shader_parameter/noise_scaling = 0.01
 shader_parameter/noise = ExtResource("2_5bh7c")

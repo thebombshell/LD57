@@ -1,8 +1,7 @@
-[gd_scene load_steps=32 format=3 uid="uid://bohnk0v8c2sb7"]
+[gd_scene load_steps=39 format=3 uid="uid://bohnk0v8c2sb7"]
 
 [ext_resource type="PackedScene" uid="uid://ct3tqi60eog4g" path="res://Scenes/Objects/slappy.tscn" id="1_nh5p0"]
 [ext_resource type="PackedScene" uid="uid://dp5b53jpyngdr" path="res://Scenes/Objects/follow_camera.tscn" id="2_nh5p0"]
-[ext_resource type="Texture2D" uid="uid://iim4civdbn6c" path="res://Textures/test_grid.png" id="3_ahoup"]
 [ext_resource type="Material" uid="uid://s28r5trsxd3j" path="res://Shaders/water_surface_mat.tres" id="4_vbkge"]
 [ext_resource type="Script" uid="uid://dfscxgebnw604" path="res://Scripts/reaction_label.gd" id="5_u7ydd"]
 [ext_resource type="Script" uid="uid://ddd6yr7mdnxxd" path="res://Scripts/pause_menu.gd" id="6_0vu2e"]
@@ -11,36 +10,18 @@
 [ext_resource type="ArrayMesh" uid="uid://csk24y0d0t7fa" path="res://Models/fish_flatter.res" id="6_u7ydd"]
 [ext_resource type="Script" uid="uid://ccbnjgsbwj5ck" path="res://Scripts/fish_manager.gd" id="7_cdrm4"]
 [ext_resource type="Script" uid="uid://dwsu3w33ppudq" path="res://Scripts/bus_slider.gd" id="7_thwc0"]
+[ext_resource type="Script" uid="uid://c5xvvxlar114w" path="res://Scripts/action_button.gd" id="8_bho1q"]
 [ext_resource type="ArrayMesh" uid="uid://ckqvfxmfg2vbk" path="res://Models/fish_wriggler.res" id="8_nab8s"]
 [ext_resource type="ArrayMesh" uid="uid://cw3igfscxwtut" path="res://Models/fish_spinner.res" id="9_rcu24"]
 [ext_resource type="AudioStream" uid="uid://fyjiqqewb843" path="res://Sounds/music.tres" id="11_1n328"]
+[ext_resource type="Shader" uid="uid://d4mr67qb15lsw" path="res://Shaders/fish_shader.gdshader" id="13_guhdy"]
+[ext_resource type="Shader" uid="uid://c2l0p7wokkb2o" path="res://Shaders/terrain.gdshader" id="16_elduw"]
+[ext_resource type="Texture2D" uid="uid://mhjpkysdks5g" path="res://Textures/radial_noise.png" id="17_83bgv"]
+[ext_resource type="Shader" uid="uid://bvtv5xcbenuh1" path="res://Shaders/boundary_shader.gdshader" id="18_83bgv"]
+[ext_resource type="Script" uid="uid://ehqbyvqbd11l" path="res://Scenes/Maps/terrain.gd" id="18_hm1iv"]
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_nh5p0"]
-size = Vector3(500, 5, 500)
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_vbkge"]
-albedo_texture = ExtResource("3_ahoup")
-
-[sub_resource type="PlaneMesh" id="PlaneMesh_ahoup"]
-size = Vector2(500, 500)
-
-[sub_resource type="BoxShape3D" id="BoxShape3D_ahoup"]
-size = Vector3(500, 100, 5)
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_xy7d5"]
-albedo_texture = ExtResource("3_ahoup")
-
-[sub_resource type="PlaneMesh" id="PlaneMesh_vbkge"]
-size = Vector2(500, 50)
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_og8sx"]
-albedo_texture = ExtResource("3_ahoup")
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_u7ydd"]
-albedo_texture = ExtResource("3_ahoup")
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_cdrm4"]
-albedo_texture = ExtResource("3_ahoup")
+[sub_resource type="BoxShape3D" id="BoxShape3D_bho1q"]
+size = Vector3(500, 500, 20)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_vbkge"]
 size = Vector3(5000, 50, 5000)
@@ -64,20 +45,95 @@ background_mode = 2
 sky = SubResource("Sky_rcu24")
 ambient_light_source = 3
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_gllht"]
+bg_color = Color(0, 0, 0, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hm1iv"]
+content_margin_left = 4.0
+content_margin_top = 4.0
+content_margin_right = 4.0
+content_margin_bottom = 4.0
+bg_color = Color(1, 1, 1, 1)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color(0, 0, 0, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_k55vb"]
+bg_color = Color(0, 0, 0, 0.498039)
+skew = Vector2(0.2, 0)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bl3pr"]
+bg_color = Color(0, 0, 0, 0.498039)
+skew = Vector2(-0.2, 0)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
 [sub_resource type="MultiMesh" id="MultiMesh_nab8s"]
 transform_format = 1
 use_colors = true
 mesh = ExtResource("6_u7ydd")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_elduw"]
+render_priority = 0
+shader = ExtResource("13_guhdy")
+shader_parameter/WIGGLE_SPEED = 5.0
+shader_parameter/WIGGLE_INTENSITY = 2.0
+shader_parameter/WIGGLE_LENGTH = 0.5
 
 [sub_resource type="MultiMesh" id="MultiMesh_1n328"]
 transform_format = 1
 use_colors = true
 mesh = ExtResource("8_nab8s")
 
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_83bgv"]
+render_priority = 0
+shader = ExtResource("13_guhdy")
+shader_parameter/WIGGLE_SPEED = 0.5
+shader_parameter/WIGGLE_INTENSITY = 1.0
+shader_parameter/WIGGLE_LENGTH = 0.1
+
 [sub_resource type="MultiMesh" id="MultiMesh_hhq76"]
 transform_format = 1
 use_colors = true
 mesh = ExtResource("9_rcu24")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_gllht"]
+render_priority = 0
+shader = ExtResource("16_elduw")
+shader_parameter/peak_color = Color(0.885911, 0.399614, 0.214614, 1)
+shader_parameter/dip_color = Color(0.425225, 0.199369, 0.157914, 1)
+shader_parameter/height_map = ExtResource("17_83bgv")
+shader_parameter/height_map_scale = 1000.0
+shader_parameter/height_map_depth = 20.0
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_hm1iv"]
+material = SubResource("ShaderMaterial_gllht")
+size = Vector2(2000, 2000)
+subdivide_width = 1024
+subdivide_depth = 1024
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_hm1iv"]
+render_priority = 0
+shader = ExtResource("18_83bgv")
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_elduw"]
+material = SubResource("ShaderMaterial_hm1iv")
+flip_faces = true
+top_radius = 300.0
+bottom_radius = 300.0
+height = 500.0
+cap_top = false
+cap_bottom = false
 
 [node name="Game" type="Node3D"]
 process_mode = 1
@@ -105,52 +161,52 @@ shadow_enabled = true
 collision_layer = 8
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="HardSurface"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -25, 0)
-shape = SubResource("BoxShape3D_nh5p0")
-
-[node name="MeshInstance3D" type="MeshInstance3D" parent="HardSurface/CollisionShape3D"]
-material_override = SubResource("StandardMaterial3D_vbkge")
-mesh = SubResource("PlaneMesh_ahoup")
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 300)
+shape = SubResource("BoxShape3D_bho1q")
 
 [node name="CollisionShape3D2" type="CollisionShape3D" parent="HardSurface"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 250)
-shape = SubResource("BoxShape3D_ahoup")
-
-[node name="MeshInstance3D2" type="MeshInstance3D" parent="HardSurface/CollisionShape3D2"]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, -25, -2.5)
-material_override = SubResource("StandardMaterial3D_xy7d5")
-mesh = SubResource("PlaneMesh_vbkge")
-skeleton = NodePath("../../CollisionShape3D")
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -300)
+shape = SubResource("BoxShape3D_bho1q")
 
 [node name="CollisionShape3D3" type="CollisionShape3D" parent="HardSurface"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -250)
-shape = SubResource("BoxShape3D_ahoup")
-
-[node name="MeshInstance3D3" type="MeshInstance3D" parent="HardSurface/CollisionShape3D3"]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, -25, 2.5)
-material_override = SubResource("StandardMaterial3D_og8sx")
-mesh = SubResource("PlaneMesh_vbkge")
-skeleton = NodePath("../../CollisionShape3D")
+transform = Transform3D(0.866025, 0, -0.5, 0, 1, 0, 0.5, 0, 0.866025, -150, 0, 259.808)
+shape = SubResource("BoxShape3D_bho1q")
 
 [node name="CollisionShape3D4" type="CollisionShape3D" parent="HardSurface"]
-transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, -250, 0, -1.09278e-05)
-shape = SubResource("BoxShape3D_ahoup")
-
-[node name="MeshInstance3D2" type="MeshInstance3D" parent="HardSurface/CollisionShape3D4"]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, -25, -2.5)
-material_override = SubResource("StandardMaterial3D_u7ydd")
-mesh = SubResource("PlaneMesh_vbkge")
-skeleton = NodePath("../../CollisionShape3D")
+transform = Transform3D(0.866025, 0, -0.5, 0, 1, 0, 0.5, 0, 0.866025, 150, 0, -259.808)
+shape = SubResource("BoxShape3D_bho1q")
 
 [node name="CollisionShape3D5" type="CollisionShape3D" parent="HardSurface"]
-transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 250, 0, 1.09278e-05)
-shape = SubResource("BoxShape3D_ahoup")
+transform = Transform3D(0.5, 0, -0.866025, 0, 1, 0, 0.866025, 0, 0.5, -259.808, 0, 150)
+shape = SubResource("BoxShape3D_bho1q")
 
-[node name="MeshInstance3D3" type="MeshInstance3D" parent="HardSurface/CollisionShape3D5"]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, -25, 2.5)
-material_override = SubResource("StandardMaterial3D_cdrm4")
-mesh = SubResource("PlaneMesh_vbkge")
-skeleton = NodePath("../../CollisionShape3D")
+[node name="CollisionShape3D6" type="CollisionShape3D" parent="HardSurface"]
+transform = Transform3D(0.5, 0, -0.866025, 0, 1, 0, 0.866025, 0, 0.5, 259.808, 0, -150)
+shape = SubResource("BoxShape3D_bho1q")
+
+[node name="CollisionShape3D7" type="CollisionShape3D" parent="HardSurface"]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -300, 0, 0)
+shape = SubResource("BoxShape3D_bho1q")
+
+[node name="CollisionShape3D8" type="CollisionShape3D" parent="HardSurface"]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 300, 0, 0)
+shape = SubResource("BoxShape3D_bho1q")
+
+[node name="CollisionShape3D9" type="CollisionShape3D" parent="HardSurface"]
+transform = Transform3D(-0.5, 0, -0.866025, 0, 1, 0, 0.866025, 0, -0.5, -259.808, 0, -150)
+shape = SubResource("BoxShape3D_bho1q")
+
+[node name="CollisionShape3D10" type="CollisionShape3D" parent="HardSurface"]
+transform = Transform3D(-0.5, 0, -0.866025, 0, 1, 0, 0.866025, 0, -0.5, 259.808, 0, 150)
+shape = SubResource("BoxShape3D_bho1q")
+
+[node name="CollisionShape3D11" type="CollisionShape3D" parent="HardSurface"]
+transform = Transform3D(-0.866025, 0, -0.5, 0, 1, 0, 0.5, 0, -0.866025, -150, 0, -259.808)
+shape = SubResource("BoxShape3D_bho1q")
+
+[node name="CollisionShape3D12" type="CollisionShape3D" parent="HardSurface"]
+transform = Transform3D(-0.866025, 0, -0.5, 0, 1, 0, 0.5, 0, -0.866025, 150, 0, 259.808)
+shape = SubResource("BoxShape3D_bho1q")
 
 [node name="Water" type="StaticBody3D" parent="."]
 collision_layer = 4
@@ -166,6 +222,7 @@ cast_shadow = 0
 mesh = SubResource("PlaneMesh_xy7d5")
 
 [node name="follow_camera" parent="." instance=ExtResource("2_nh5p0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.28643, 8.72837)
 environment = SubResource("Environment_1n328")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="follow_camera"]
@@ -204,7 +261,7 @@ script = ExtResource("5_u7ydd")
 modulate = Color(1, 1, 1, 0)
 layout_mode = 1
 anchors_preset = -1
-offset_left = 256.0
+offset_left = 240.0
 offset_top = 16.0
 pivot_offset = Vector2(26, 16)
 theme_override_font_sizes/font_size = 32
@@ -255,8 +312,44 @@ anchor_left = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = -24.0
+theme_override_styles/background = SubResource("StyleBoxFlat_gllht")
+theme_override_styles/fill = SubResource("StyleBoxFlat_hm1iv")
 fill_mode = 3
 show_percentage = false
+
+[node name="ScoreBack" type="Panel" parent="follow_camera/CanvasLayer/Control"]
+z_index = -1
+layout_mode = 1
+anchors_preset = -1
+offset_left = -16.0
+offset_top = -16.0
+offset_right = 304.0
+offset_bottom = 80.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_k55vb")
+
+[node name="DepthBack" type="Panel" parent="follow_camera/CanvasLayer/Control"]
+z_index = -1
+layout_mode = 1
+anchors_preset = -1
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = -16.0
+offset_top = -48.0
+offset_right = 256.0
+offset_bottom = 16.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_bl3pr")
+
+[node name="TimeBack" type="Panel" parent="follow_camera/CanvasLayer/Control"]
+z_index = -1
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -256.0
+offset_top = -16.0
+offset_right = 16.0
+offset_bottom = 48.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_bl3pr")
 
 [node name="PauseMenu" type="Control" parent="follow_camera/CanvasLayer"]
 process_mode = 3
@@ -276,9 +369,9 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -180.0
+offset_left = -320.0
 offset_top = -160.0
-offset_right = 180.0
+offset_right = 320.0
 offset_bottom = 160.0
 
 [node name="VBoxContainer" type="VBoxContainer" parent="follow_camera/CanvasLayer/PauseMenu/Panel"]
@@ -298,7 +391,7 @@ text = "PAUSED"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="Label2" type="Label" parent="follow_camera/CanvasLayer/PauseMenu/Panel/VBoxContainer"]
+[node name="Label4" type="Label" parent="follow_camera/CanvasLayer/PauseMenu/Panel/VBoxContainer"]
 layout_mode = 2
 text = "AUDIO"
 horizontal_alignment = 1
@@ -363,6 +456,78 @@ value = 1.0
 script = ExtResource("7_thwc0")
 bus = &"SFX"
 
+[node name="Label2" type="Label" parent="follow_camera/CanvasLayer/PauseMenu/Panel/VBoxContainer"]
+layout_mode = 2
+text = "CONTROLS"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="HBoxContainer5" type="HBoxContainer" parent="follow_camera/CanvasLayer/PauseMenu/Panel/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Button2" type="Button" parent="follow_camera/CanvasLayer/PauseMenu/Panel/VBoxContainer/HBoxContainer5"]
+custom_minimum_size = Vector2(140, 24)
+layout_mode = 2
+toggle_mode = true
+text = "LEFT ()"
+text_overrun_behavior = 1
+script = ExtResource("8_bho1q")
+
+[node name="Button3" type="Button" parent="follow_camera/CanvasLayer/PauseMenu/Panel/VBoxContainer/HBoxContainer5"]
+custom_minimum_size = Vector2(140, 24)
+layout_mode = 2
+toggle_mode = true
+text = "RIGHT ()"
+text_overrun_behavior = 1
+script = ExtResource("8_bho1q")
+display_name = &"RIGHT"
+action_name = &"move_right"
+
+[node name="Button4" type="Button" parent="follow_camera/CanvasLayer/PauseMenu/Panel/VBoxContainer/HBoxContainer5"]
+custom_minimum_size = Vector2(140, 24)
+layout_mode = 2
+toggle_mode = true
+text = "FORWARD ()"
+text_overrun_behavior = 1
+script = ExtResource("8_bho1q")
+display_name = &"FORWARD"
+action_name = &"move_fore"
+
+[node name="Button5" type="Button" parent="follow_camera/CanvasLayer/PauseMenu/Panel/VBoxContainer/HBoxContainer5"]
+custom_minimum_size = Vector2(140, 24)
+layout_mode = 2
+toggle_mode = true
+text = "BACKWARD ()"
+text_overrun_behavior = 1
+script = ExtResource("8_bho1q")
+display_name = &"BACKWARD"
+action_name = &"move_back"
+
+[node name="HBoxContainer6" type="HBoxContainer" parent="follow_camera/CanvasLayer/PauseMenu/Panel/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Button2" type="Button" parent="follow_camera/CanvasLayer/PauseMenu/Panel/VBoxContainer/HBoxContainer6"]
+custom_minimum_size = Vector2(140, 24)
+layout_mode = 2
+toggle_mode = true
+text = "JUMP ()"
+text_overrun_behavior = 1
+script = ExtResource("8_bho1q")
+display_name = &"JUMP"
+action_name = &"jump"
+
+[node name="Button3" type="Button" parent="follow_camera/CanvasLayer/PauseMenu/Panel/VBoxContainer/HBoxContainer6"]
+custom_minimum_size = Vector2(140, 24)
+layout_mode = 2
+toggle_mode = true
+text = "DIVE ()"
+text_overrun_behavior = 1
+script = ExtResource("8_bho1q")
+display_name = &"DIVE"
+action_name = &"dive"
+
 [node name="Label3" type="Label" parent="follow_camera/CanvasLayer/PauseMenu/Panel/VBoxContainer"]
 layout_mode = 2
 text = "GAMEPLAY"
@@ -375,15 +540,16 @@ layout_mode = 2
 theme_override_constants/separation = 0
 
 [node name="Label" type="Label" parent="follow_camera/CanvasLayer/PauseMenu/Panel/VBoxContainer/HBoxContainer4"]
-custom_minimum_size = Vector2(160, 0)
+custom_minimum_size = Vector2(300, 0)
 layout_mode = 2
 text = "HIGHSCORE:"
 
 [node name="Label2" type="Label" parent="follow_camera/CanvasLayer/PauseMenu/Panel/VBoxContainer/HBoxContainer4"]
-custom_minimum_size = Vector2(160, 0)
+custom_minimum_size = Vector2(300, 0)
 layout_mode = 2
 text = "000000"
 script = ExtResource("5_u7ydd")
+auto_center_pivot = true
 
 [node name="Button" type="Button" parent="follow_camera/CanvasLayer/PauseMenu/Panel/VBoxContainer"]
 layout_mode = 2
@@ -396,16 +562,18 @@ material_override = ExtResource("6_1n328")
 multimesh = SubResource("MultiMesh_nab8s")
 script = ExtResource("7_cdrm4")
 COUNT = 400
+COLOR_CHART = Array[Color]([Color(1, 0.393006, 0.699812, 1), Color(0.84869, 0.337836, 0.483617, 1), Color(0.62383, 0.223088, 0.333501, 1), Color(0.697331, 0.206764, 0.229068, 1), Color(0.809147, 0.370161, 0.25665, 1)])
 separation_range = 25.0
 separation = 2.0
 alignment = 0.5
 
 [node name="MultiMeshInstance3D2" type="MultiMeshInstance3D" parent="."]
 visible = false
-material_override = ExtResource("6_1n328")
+material_override = SubResource("ShaderMaterial_elduw")
 multimesh = SubResource("MultiMesh_1n328")
 script = ExtResource("7_cdrm4")
 COUNT = 200
+COLOR_CHART = Array[Color]([Color(0.488451, 0.628015, 0.422409, 1), Color(0.22231, 0.545644, 0.652201, 1), Color(0.291837, 0.427527, 0.728724, 1), Color(0.196023, 0.224036, 0.514954, 1), Color(0.343441, 0.0101852, 0.59116, 1)])
 base_score = 200
 fish_name = "WRIGGLER"
 separation_range = 25.0
@@ -416,10 +584,11 @@ bot = -22.0
 
 [node name="MultiMeshInstance3D3" type="MultiMeshInstance3D" parent="."]
 visible = false
-material_override = ExtResource("6_1n328")
+material_override = SubResource("ShaderMaterial_83bgv")
 multimesh = SubResource("MultiMesh_hhq76")
 script = ExtResource("7_cdrm4")
 COUNT = 100
+COLOR_CHART = Array[Color]([Color(0.87451, 0.701961, 0, 1), Color(0.874942, 0.700026, 0, 1), Color(0.87451, 0.701961, 0, 1), Color(0.87451, 0.701961, 0, 1), Color(0.87451, 0.701961, 0, 1)])
 base_score = 400
 fish_name = "SPINNER"
 separation_range = 40.0
@@ -434,3 +603,15 @@ process_mode = 3
 stream = ExtResource("11_1n328")
 autoplay = true
 bus = &"Music"
+
+[node name="Terrain" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -45, 0)
+mesh = SubResource("PlaneMesh_hm1iv")
+script = ExtResource("18_hm1iv")
+
+[node name="OutOfBounds" type="MeshInstance3D" parent="."]
+mesh = SubResource("CylinderMesh_elduw")
+
+[node name="Clouds" type="Node3D" parent="."]
+
+[node name="Props" type="Node3D" parent="."]

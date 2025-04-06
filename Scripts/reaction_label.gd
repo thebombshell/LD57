@@ -1,5 +1,7 @@
 extends Label
 
+@export var auto_center_pivot : bool = false;
+
 var fade_timer = 0.0;
 var wiggle_timer = 0.0;
 var scale_timer = 0.0;
@@ -15,6 +17,12 @@ func wiggle(t_time : float = 1.0):
 func scaler(t_time : float = 1.0):
 	
 	scale_timer = t_time;
+
+func _ready():
+	
+	if auto_center_pivot:
+		pivot_offset = get_minimum_size() * 0.5;
+	return;
 
 func _physics_process(t_delta: float) -> void:
 	

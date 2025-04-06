@@ -2,6 +2,13 @@ class_name Slappy extends CharacterBody3D
 
 const DIVE_RANDOMIZER = preload("res://Sounds/dive_randomizer.tres");
 const STEP_RANDOMIZER = preload("res://Sounds/step_randomizer.tres");
+const SPLASH_ANIMATOR = preload("res://Scenes/Objects/splash_animator.tscn");
+
+const SCORE_SOUNDS = [preload("res://Sounds/score_1.wav"),
+	preload("res://Sounds/score_2.wav"),
+	preload("res://Sounds/score_3.wav"),
+	preload("res://Sounds/score_4.wav"),
+	preload("res://Sounds/score_5.wav")];
 
 const MASK_PLAYER = 1;
 const MASK_BIT = 2;
@@ -25,7 +32,9 @@ static var current : Slappy = null;
 @onready var slappy_sploosh: AudioStreamPlayer3D = $SlappySploosh
 @onready var dive_sound: AudioStreamPlayer3D = $DiveSound
 @onready var slappy_breach: AudioStreamPlayer3D = $SlappyBreach
-
+@onready var bubbler: GPUParticles3D = $BubbleParticles
+@onready var score_player: AudioStreamPlayer = $ScorePlayer
+@onready var trick_player: AudioStreamPlayer = $TrickPlayer
 
 @export var camera : Camera3D = null;
 @export var depth_label : Label = null;
@@ -70,7 +79,7 @@ var no_input_timer = 0.0;
 var under_water_timer = 0.0;
 var out_of_water_tiemr = 0.0;
 var swim_boost_timer = 0.0;
-var swim_boost_power = 2.0;
+var swim_boost_power = 3.0;
 
 var catch_manager : FishManager = null;
 var catch_index : int = -1;
@@ -85,6 +94,7 @@ var multiplier : int = 0;
 var multiplier_timer : float = 0.0;
 
 var music_alpha = 0.0;
+var audio_fadein = 1.0;
 
 func game_end():
 	
@@ -132,6 +142,8 @@ func score():
 	
 	add_time(5.0);
 	set_multiplier(multiplier + 1);
+	score_player.stream = SCORE_SOUNDS[catch_size];
+	score_player.play();
 	
 	var message = "???";
 	match catch_size:
@@ -171,6 +183,13 @@ func handle_forces(t_delta : float):
 	
 	return;
 
+func splash():
+	
+	var node = SPLASH_ANIMATOR.instantiate();
+	get_parent().add_child(node);
+	node.global_position = Vector3(global_position.x, 0.0, global_position.z);
+	return;
+
 func control_diving(t_delta : float) -> void:
 	
 	if camera == null:
@@ -192,10 +211,11 @@ func control_diving(t_delta : float) -> void:
 	if is_underwater:
 		
 		if !has_dived:
+			splash();
 			animation_player.play("swim", 0.5);
 			slappy_sploosh.stream = DIVE_RANDOMIZER;
 			slappy_sploosh.play();
-			dive_sound.volume_db = lerp(-40.0, 0.0, clamp(smoothstep(-5.0, -40.0, velocity.y), 0.0, 1.0));
+			dive_sound.volume_db = lerp(-40.0, 0.0, clamp(smoothstep(-4.0, -20.0, velocity.y), 0.0, 1.0));
 			dive_sound.play(0.33);
 			has_dived = true;
 			is_tricking = false;
@@ -203,13 +223,21 @@ func control_diving(t_delta : float) -> void:
 		
 		if swim_boost_timer <= 0.0:
 			if Input.is_action_just_pressed("jump"):
-				swim_boost_timer += t_delta;
+				swim_boost_timer = t_delta;
 				animation_player.play("swim_trick", 0.2);
 				animation_player.queue("swim");
+				dive_sound.volume_db = -5.0;
+				dive_sound.play(0.4);
 		else:
 			swim_boost_timer += t_delta;
 			var speed = velocity.length();
 			velocity += Vector3(velocity.x, 0.0, velocity.y).normalized() * speed * swim_boost_power * t_delta * max(0.0, 1.0 - swim_boost_timer);
+		
+		var bubbler_alpha = clamp(1.0 - swim_boost_timer, 0.0, 1.0) if swim_boost_timer > 0.0 else 0.0;
+		var bubbler_mat : ParticleProcessMaterial = bubbler.process_material;
+		bubbler_mat.initial_velocity_min = lerp(0.0, 10.0, bubbler_alpha);
+		bubbler_mat.initial_velocity_max = lerp(5.0, 15.0, bubbler_alpha);
+		
 		
 		under_water_timer += t_delta;
 		if is_inputting:
@@ -290,6 +318,7 @@ func dive():
 		velocity.y = 40.0;
 		animation_player.play("jump_trick", 0.5);
 		animation_player.queue("dive");
+		trick_player.play();
 		is_tricking = true;
 	else:
 		animation_player.play("dive", 0.5);
@@ -304,6 +333,8 @@ func breach():
 	is_diving = false;
 	collision_mask |= MASK_WATER;
 	collision_mask &= ~MASK_UNDERWATER;
+	if velocity.y > 10.0:
+		splash();
 	return;
 
 func _physics_process(t_delta: float) -> void:
@@ -383,10 +414,13 @@ func process_ui(t_delta : float) -> void:
 			
 			var stream : AudioStreamSynchronized = music_player.stream;
 			var alpha = clamp(smoothstep(1, 6, multiplier), 0.0, 1.0);
+			if audio_fadein > 0.0:
+				audio_fadein -= t_delta;
+			var off = -60.0 * max(0.0, audio_fadein);
 			music_alpha = lerp(music_alpha, alpha, t_delta);
-			stream.set_sync_stream_volume(0, -60.0 * pow(music_alpha, 2.0));
-			stream.set_sync_stream_volume(1, -60.0 * pow(1.0 - music_alpha, 3.0));
-			stream.set_sync_stream_volume(2, -60.0 * clamp(smoothstep(15.0, 45.0, timer), 0.0, 1.0));
+			stream.set_sync_stream_volume(0, off + -60.0 * pow(music_alpha, 2.0));
+			stream.set_sync_stream_volume(1, off + -60.0 * pow(1.0 - music_alpha, 3.0));
+			stream.set_sync_stream_volume(2, off + -60.0 * clamp(smoothstep(15.0, 45.0, timer), 0.0, 1.0));
 		
 		multiplier_timer -= t_delta * (multiplier * 0.5);
 		if multiplier_timer < 0.0:
@@ -430,6 +464,8 @@ func _ready():
 	return;
 
 func _process(t_delta: float) -> void:
+	
+	bubbler.emitting = is_underwater;
 	
 	timer -= t_delta;
 	
