@@ -9,6 +9,15 @@ const MASK_WATER = 4;
 const MASK_GROUND = 8;
 const MASK_UNDERWATER = 16;
 
+const MULTIPLIER_COLORS = [
+	Color.LIGHT_GOLDENROD,
+	Color.GOLD,
+	Color.ORANGE,
+	Color.LIGHT_CORAL,
+	Color.MEDIUM_PURPLE,
+	Color.WEB_PURPLE
+];
+
 static var current : Slappy = null;
 
 @onready var animation_player: AnimationPlayer = $AnimationPlayer;
@@ -24,6 +33,11 @@ static var current : Slappy = null;
 @export var message_label : Label = null;
 @export var timer_label : Label = null;
 @export var time_bar : ProgressBar = null;
+@export var multiplier_label : Label = null;
+@export var timer_bonus : Label = null;
+@export var music_player : AudioStreamPlayer = null;
+@export var game_end_label : Label = null;
+@export var highscore_label : Label = null;
 
 var input_prev = {
 	"move": Vector2.ZERO,
@@ -37,6 +51,8 @@ var input_curr = {
 	"jump": false,
 	"dive": false
 };
+
+static var s_highscore : int = 0;
 
 var is_diving = false;
 var has_dived = false;
@@ -65,12 +81,36 @@ var current_score : int = 0;
 var max_time : float = 120.0;
 var timer : float = 120.0;
 
+var multiplier : int = 0;
+var multiplier_timer : float = 0.0;
+
+var music_alpha = 0.0;
+
+func game_end():
+	
+	var stream : AudioStreamSynchronized = music_player.stream;
+	stream.set_sync_stream_volume(0, -10.0);
+	stream.set_sync_stream_volume(1, -60.0);
+	stream.set_sync_stream_volume(2, -60.0);
+	if current_score > s_highscore:
+		
+		game_end_label.text = "NEW HIGHSCORE!";
+		s_highscore = current_score;
+		highscore_label.text = "%06d" % s_highscore;
+		highscore_label.wiggle();
+		highscore_label.modulate = Color.GOLD;
+	else:
+		game_end_label.text = "GAME OVER!";
+	
+	return;
+
 func try_catch(t_manager : FishManager, t_index : int) -> bool:
 	
 	var size = t_manager.sizes[t_index];
 	if size > catch_size:
 		if catch_manager != null && catch_index >= 0:
 			catch_manager.spawn(catch_index);
+			add_time(1.0);
 		catch_manager = t_manager;
 		catch_index = t_index;
 		catch_size = size;
@@ -90,7 +130,8 @@ func score():
 		Color.WEB_PURPLE
 	];
 	
-	timer += 5.0;
+	add_time(5.0);
+	set_multiplier(multiplier + 1);
 	
 	var message = "???";
 	match catch_size:
@@ -101,7 +142,7 @@ func score():
 		4: message = "TASTY " + catch_manager.fish_name + "!!!";
 	var worth = floori(catch_manager.base_score * FishManager.SIZE_CHART[catch_size]);
 	
-	current_score += worth;
+	current_score += worth * multiplier;
 	
 	score_label.text = "SCORE:%06d" % current_score;
 	score_label.wiggle();
@@ -115,7 +156,7 @@ func score():
 	catch_manager.spawn(catch_index);
 	catch_manager = null;
 	catch_index = -1;
-	catch_size = 0.0;
+	catch_size = 0;
 	
 	return;
 
@@ -137,7 +178,6 @@ func control_diving(t_delta : float) -> void:
 	
 	var is_inputting = false;
 	var modified_input = Vector3.ZERO;
-	var input_direction = Vector3.FORWARD;
 	
 	if input_curr.move.length() > 0.1:
 		
@@ -145,7 +185,6 @@ func control_diving(t_delta : float) -> void:
 		is_inputting = true;
 		modified_input = camera.transform.basis * Vector3(input_curr.move.x, 0.0, -input_curr.move.y);
 		modified_input.y = 0.0;
-		input_direction = modified_input.normalized();
 	else:
 		no_input_timer += t_delta;
 	is_underwater = global_position.y < 0.0;
@@ -291,7 +330,34 @@ func _physics_process(t_delta: float) -> void:
 	move_and_slide();
 	return;
 
-func process_ui() -> void:
+func set_multiplier(t_multiplier : int):
+	
+	if multiplier_label == null:
+		return;
+	
+	multiplier = min(t_multiplier, 6);
+	multiplier_timer = 15.0;
+	if multiplier > 0:
+		multiplier_label.modulate = MULTIPLIER_COLORS[multiplier - 1];
+	multiplier_label.modulate.a = 0.0 if multiplier <= 0 else 1.0;
+	multiplier_label.text = "%1d*" % multiplier;
+	multiplier_label.wiggle();
+	multiplier_label.scaler();
+	return;
+
+func add_time(t_time : float):
+	
+	if timer_label == null || timer_bonus == null:
+		return;
+	
+	timer += t_time;
+	timer_bonus.text = "+%1d" % roundi(t_time);
+	timer_bonus.wiggle();
+	timer_bonus.scaler();
+	timer_bonus.fade();
+	return;
+
+func process_ui(t_delta : float) -> void:
 	
 	const format = "DEPTH:%03.2fM";
 	if depth_label != null:
@@ -301,10 +367,31 @@ func process_ui() -> void:
 		var seconds = fmod(timer, 60.0);
 		var minutes = (timer - seconds) / 60.0;
 		timer_label.text = "%02d:%02d" % [floori(minutes), floori(seconds)];
+		
+		var col_a = lerp(Color.WHITE, Color.GOLD, clamp(smoothstep(60.0, 30.0, timer), 0.0, 1.0));
+		var col_b = lerp(Color.GOLD, Color.RED, clamp(smoothstep(45.0, 15.0, timer), 0.0, 1.0));
+		var col_c = lerp(col_a, col_b, clamp(smoothstep(120.0, 15.0, timer), 0.0, 1.0));
+		timer_label.modulate = col_c;
 	
 	if time_bar != null:
 		time_bar.max_value = max_time;
 		time_bar.value = timer;
+	
+	if multiplier_label != null:
+		
+		if music_player != null:
+			
+			var stream : AudioStreamSynchronized = music_player.stream;
+			var alpha = clamp(smoothstep(1, 6, multiplier), 0.0, 1.0);
+			music_alpha = lerp(music_alpha, alpha, t_delta);
+			stream.set_sync_stream_volume(0, -60.0 * pow(music_alpha, 2.0));
+			stream.set_sync_stream_volume(1, -60.0 * pow(1.0 - music_alpha, 3.0));
+			stream.set_sync_stream_volume(2, -60.0 * clamp(smoothstep(15.0, 45.0, timer), 0.0, 1.0));
+		
+		multiplier_timer -= t_delta * (multiplier * 0.5);
+		if multiplier_timer < 0.0:
+			multiplier_timer = 15.0;
+			set_multiplier(multiplier - 1);
 	
 	return;
 
@@ -339,6 +426,7 @@ func process_camera(t_delta : float) -> void:
 func _ready():
 	
 	current = self;
+	highscore_label.text = "%06d" % s_highscore;
 	return;
 
 func _process(t_delta: float) -> void:
@@ -346,5 +434,5 @@ func _process(t_delta: float) -> void:
 	timer -= t_delta;
 	
 	process_camera(t_delta);
-	process_ui();
+	process_ui(t_delta);
 	return;

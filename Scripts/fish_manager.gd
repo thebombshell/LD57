@@ -69,9 +69,9 @@ func map_get_nearby(t_index : int) -> Array[int]:
 	
 	var output : Array[int] = [];
 	
-	var hash = space_hash(positions[t_index]);
-	for x in range(hash.x - 1, hash.x + 1):
-		for y in range(hash.y - 1, hash.y + 1):
+	var t_hash = space_hash(positions[t_index]);
+	for x in range(t_hash.x - 1, t_hash.x + 1):
+		for y in range(t_hash.y - 1, t_hash.y + 1):
 			var key = Vector2i(x, y);
 			if map.has(key):
 				output.append_array(map[key]);
@@ -146,7 +146,7 @@ func update(t_index : int, t_delta : float):
 		for x in x_count:
 			
 			var i = nearby[randi_range(0, len(nearby) - 1)];
-			if t_position.distance_to(positions[i]) < separation_range:
+			if t_position.distance_to(positions[i]) < s_range:
 				close += t_position - positions[i];
 			align += velocities[i];
 			center += positions[i];
@@ -173,6 +173,7 @@ func update(t_index : int, t_delta : float):
 func _ready() -> void:
 	
 	visible = true;
+	multimesh.instance_count = 0;
 	multimesh.use_colors = true;
 	multimesh.instance_count = COUNT;
 	positions.resize(COUNT);
