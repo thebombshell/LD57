@@ -97,6 +97,44 @@ var multiplier_timer : float = 0.0;
 var music_alpha = 0.0;
 var audio_fadein = 1.0;
 
+
+func reset_game():
+	
+	global_position = Vector3(0.0, 1.0, 0.0);
+	velocity = Vector3.ZERO;
+	is_diving = false;
+	has_dived = false;
+	is_underwater = false;
+	is_tricking = false;
+	max_depth = 0.0;
+	forward  = Vector3(0.0, 0.0, 1.0);
+	acceleration  = 60.0;
+	jump_power  = 10.0;
+	jump_speed_boost  = 1.0;
+	air_drag  = 0.05;
+	ground_drag  = 0.1;
+	no_input_timer = 0.0;
+	under_water_timer = 0.0;
+	out_of_water_tiemr = 0.0;
+	swim_boost_timer = 0.0;
+	swim_boost_power = 3.0;
+	if catch_manager != null && catch_index >= 0:
+		catch_manager.spawn(catch_index);
+	catch_manager  = null;
+	catch_index  = -1;
+	catch_size  = -1;
+	current_score  = 0;
+	max_time  = 120.0;
+	timer  = 120.0;
+	multiplier  = 0;
+	multiplier_timer  = 0.0;
+	music_alpha = 0.0;
+	audio_fadein = 1.0;
+	if collision_mask & MASK_UNDERWATER:
+		collision_mask |= MASK_WATER;
+		collision_mask &= ~MASK_UNDERWATER;
+	return;
+
 func ring_boost():
 	
 	swim_boost_timer = 0.01;

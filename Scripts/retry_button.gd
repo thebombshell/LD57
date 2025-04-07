@@ -9,5 +9,6 @@ func _pressed() -> void:
 		get_tree().change_scene_to_file(GAME_SCENE_PATH);
 	else:
 		get_tree().paused = false;
-		get_tree().change_scene_to_file(GAME_SCENE_PATH);
+		$"../../..".visible = false;
+		Slappy.current.reset_game();
 	return;
