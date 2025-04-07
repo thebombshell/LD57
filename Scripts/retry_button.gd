@@ -1,7 +1,13 @@
 extends Button
 
+const GAME_SCENE_PATH = "res://Scenes/Maps/game.tscn";
+@export var is_main_menu = false;
+
 func _pressed() -> void:
 	
-	get_tree().paused = false;
-	get_tree().reload_current_scene();
+	if is_main_menu:
+		get_tree().change_scene_to_file(GAME_SCENE_PATH);
+	else:
+		get_tree().paused = false;
+		get_tree().change_scene_to_file(GAME_SCENE_PATH);
 	return;

@@ -1,0 +1,10 @@
+[gd_scene load_steps=3 format=3 uid="uid://osdyorkjhqbg"]
+
+[ext_resource type="ArrayMesh" uid="uid://dttrciunjiq7u" path="res://Models/props_RockA.res" id="1_b6bmv"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_wbx3e"]
+albedo_color = Color(0.886275, 0.4, 0.215686, 1)
+
+[node name="RockA" type="MeshInstance3D"]
+material_override = SubResource("StandardMaterial3D_wbx3e")
+mesh = ExtResource("1_b6bmv")

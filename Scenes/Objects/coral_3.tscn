@@ -1,0 +1,10 @@
+[gd_scene load_steps=3 format=3 uid="uid://5nu3ab6y6r8d"]
+
+[ext_resource type="ArrayMesh" uid="uid://dw6iukm6vu8fm" path="res://Models/props_CoralA.res" id="1_pw3tg"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_vkjo5"]
+albedo_color = Color(0.284125, 0.408487, 0.148588, 1)
+
+[node name="Coral3" type="MeshInstance3D"]
+material_override = SubResource("StandardMaterial3D_vkjo5")
+mesh = ExtResource("1_pw3tg")

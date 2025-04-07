@@ -3,7 +3,7 @@
 [ext_resource type="Shader" uid="uid://6f5k1x7qen38" path="res://Shaders/water_under.gdshader" id="1_sd5yq"]
 
 [resource]
-render_priority = 0
+render_priority = 3
 shader = ExtResource("1_sd5yq")
 shader_parameter/shallow_color = Color(0, 0.827451, 0.419608, 1)
 shader_parameter/deep_color = Color(0, 0.152941, 0.231373, 1)

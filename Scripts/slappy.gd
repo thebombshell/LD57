@@ -35,6 +35,7 @@ static var current : Slappy = null;
 @onready var bubbler: GPUParticles3D = $BubbleParticles
 @onready var score_player: AudioStreamPlayer = $ScorePlayer
 @onready var trick_player: AudioStreamPlayer = $TrickPlayer
+@onready var water_trick_player: AudioStreamPlayer = $WaterTrickPlayer
 
 @export var camera : Camera3D = null;
 @export var depth_label : Label = null;
@@ -95,6 +96,15 @@ var multiplier_timer : float = 0.0;
 
 var music_alpha = 0.0;
 var audio_fadein = 1.0;
+
+func ring_boost():
+	
+	swim_boost_timer = 0.01;
+	animation_player.play("swim_trick", 0.2);
+	animation_player.queue("swim");
+	if !water_trick_player.playing:
+		water_trick_player.play();
+	return;
 
 func game_end():
 	
@@ -237,7 +247,6 @@ func control_diving(t_delta : float) -> void:
 		var bubbler_mat : ParticleProcessMaterial = bubbler.process_material;
 		bubbler_mat.initial_velocity_min = lerp(0.0, 10.0, bubbler_alpha);
 		bubbler_mat.initial_velocity_max = lerp(5.0, 15.0, bubbler_alpha);
-		
 		
 		under_water_timer += t_delta;
 		if is_inputting:
@@ -421,6 +430,8 @@ func process_ui(t_delta : float) -> void:
 			stream.set_sync_stream_volume(0, off + -60.0 * pow(music_alpha, 2.0));
 			stream.set_sync_stream_volume(1, off + -60.0 * pow(1.0 - music_alpha, 3.0));
 			stream.set_sync_stream_volume(2, off + -60.0 * clamp(smoothstep(15.0, 45.0, timer), 0.0, 1.0));
+			if !music_player.playing:
+				music_player.play();
 		
 		multiplier_timer -= t_delta * (multiplier * 0.5);
 		if multiplier_timer < 0.0:

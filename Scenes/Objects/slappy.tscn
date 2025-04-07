@@ -1,10 +1,11 @@
-[gd_scene load_steps=12 format=3 uid="uid://ct3tqi60eog4g"]
+[gd_scene load_steps=13 format=3 uid="uid://ct3tqi60eog4g"]
 
 [ext_resource type="PackedScene" uid="uid://ds21sirmau7d5" path="res://Models/slappy.glb" id="1_eqbts"]
 [ext_resource type="Script" uid="uid://vlsb1otroa6x" path="res://Scripts/slappy.gd" id="2_v738p"]
 [ext_resource type="AudioStream" uid="uid://bl8cejys1p4bj" path="res://Sounds/dive_sound.wav" id="3_enm15"]
 [ext_resource type="AudioStream" uid="uid://b6doj53up4ndv" path="res://Sounds/breach_randomizer.tres" id="3_ja2u1"]
 [ext_resource type="AudioStream" uid="uid://c5n4w77unme3a" path="res://Sounds/trick.wav" id="5_qj5ga"]
+[ext_resource type="AudioStream" uid="uid://c0ml0choeol1i" path="res://Sounds/water_trick.wav" id="6_08es7"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_enm15"]
 radius = 1.0
@@ -101,3 +102,6 @@ bus = &"SFX"
 [node name="TrickPlayer" type="AudioStreamPlayer" parent="." index="10"]
 stream = ExtResource("5_qj5ga")
 volume_db = -10.0
+
+[node name="WaterTrickPlayer" type="AudioStreamPlayer" parent="." index="11"]
+stream = ExtResource("6_08es7")

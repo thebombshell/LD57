@@ -4,6 +4,15 @@ const SEAWEED = preload("res://Scenes/Objects/seaweed.tscn");
 const REDWEED = preload("res://Scenes/Objects/redweed.tscn");
 const RADIAL_NOISE = preload("res://Textures/radial_noise.png");
 
+const CLUTTER = [
+	preload("res://Scenes/Objects/rock_a.tscn"),
+	preload("res://Scenes/Objects/rock_b.tscn"),
+	preload("res://Scenes/Objects/coral_1.tscn"),
+	preload("res://Scenes/Objects/coral_2.tscn"),
+	preload("res://Scenes/Objects/coral_3.tscn"),
+	preload("res://Scenes/Objects/coral_4.tscn")
+];
+
 #@onready var seaweed: MultiMeshInstance3D = $Seaweed;
 
 var radial_noise : Image = null;
@@ -43,6 +52,19 @@ func generate_seaweed(t_count : int = 256):
 		var basis = Basis(Vector3.UP, t_rotation) * randf_range(1.5, 4.0);
 		var position = Vector3(uv.x, sample_at_point(uv) * height_map_depth, uv.y);
 		var node = REDWEED.instantiate();
+		add_child(node);
+		node.basis = basis;
+		node.position = position;
+		
+	for i in t_count * 2:
+		var dist = 1.0 + sqrt(float(i) / float(t_count)) * 350.0;
+		var angle = randf() * PI * 2.0;
+		var t_rotation = randf() * PI * 2.0;
+		var uv = Vector2(cos(angle), sin(angle)) * dist;
+		
+		var basis = Basis(Vector3.UP, t_rotation) * randf_range(0.5, 2.0);
+		var position = Vector3(uv.x, sample_at_point(uv) * height_map_depth, uv.y);
+		var node = CLUTTER.pick_random().instantiate();
 		add_child(node);
 		node.basis = basis;
 		node.position = position;

@@ -18,5 +18,5 @@ void fragment() {
 		discard;
 
 	ALBEDO = color;
-	ALPHA = smoothstep(alpha_cutoff, alpha_cutoff + alpha_range, x) * 0.5;
+	ALPHA = smoothstep(alpha_cutoff, alpha_cutoff + alpha_range, x);
 }

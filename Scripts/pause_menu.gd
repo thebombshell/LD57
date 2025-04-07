@@ -17,6 +17,9 @@ func pause():
 
 func _physics_process(_delta: float) -> void:
 	
+	if !is_instance_valid(Slappy.current):
+		return;
+	
 	if Input.is_action_just_pressed("pause") && Slappy.current.timer > 0.0:
 		if visible:
 			unpause();
