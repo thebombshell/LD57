@@ -14,7 +14,6 @@ script = ExtResource("1_ccn2c")
 
 [node name="UnderwaterEffect" type="MeshInstance3D" parent="."]
 transform = Transform3D(-1, 0, 1.50996e-07, 0, 1, 0, -1.50996e-07, 0, -1, 4.52988e-07, -2, -3)
-visible = false
 cast_shadow = 0
 extra_cull_margin = 16384.0
 mesh = SubResource("QuadMesh_xyirj")

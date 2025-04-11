@@ -1,62 +1,56 @@
 shader_type spatial;
 
-render_mode skip_vertex_transform, fog_disabled;
+render_mode unshaded, fog_disabled, blend_mix, depth_draw_never;
+
+#include "water_helper.gdshaderinc"
+
+const float CAMERA_FOV = PI * .5;
+const vec3 CAMERA_UP_WORLD = vec3(0.0, 1.0, 0.0);
 
 uniform sampler2D depth_texture : hint_depth_texture;
 
-uniform vec3 shallow_color : source_color;
-uniform vec3 deep_color : source_color;
-uniform float shallow_depth = 200.0;
-uniform float deep_depth = 500.0;
-uniform float noise_scaling = 128.0;
-uniform sampler2D noise;
-
 varying vec3 v_world_position;
 
+
 void vertex() {
-	v_world_position = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
-    VERTEX = (MODELVIEW_MATRIX * vec4(VERTEX, 1.0)).xyz;
-    NORMAL = normalize((MODELVIEW_MATRIX * vec4(NORMAL, 0.0)).xyz);
-    BINORMAL = normalize((MODELVIEW_MATRIX * vec4(BINORMAL, 0.0)).xyz);
-    TANGENT = normalize((MODELVIEW_MATRIX * vec4(TANGENT, 0.0)).xyz);
-}
-
-vec3 sample_at_offset(vec2 t_uv, float t_offset) {
-
-	float l = texture(noise, t_uv - vec2(t_offset, 0.0)).x;
-	float r = texture(noise, t_uv + vec2(t_offset, 0.0)).x;
-	float t = texture(noise, t_uv - vec2(0.0, t_offset)).x;
-	float b = texture(noise, t_uv + vec2(0.0, t_offset)).x;
-	return normalize(vec3(0.0, 0.01, 0.0) + vec3(r - l, 0.0, 0.0) + vec3(0.0, 0.0, t - b));
-}
-
-vec3 find_normal(vec3 t_pos) {
-
-	vec2 uv = vec2(t_pos.x, t_pos.z) + vec2(TIME * 0.01, TIME * 0.011);
-	return mix(sample_at_offset(uv, 0.01), sample_at_offset(uv, 0.05), 0.5);
+	
+	VERTEX.y = sample_water(VERTEX.xz);
 }
 
 void fragment() {
+	
+	vec3 world_position = find_depth_world_position(SCREEN_UV, depth_texture, INV_VIEW_MATRIX, INV_PROJECTION_MATRIX);
+	vec3 pixel_direction = normalize(world_position - CAMERA_POSITION_WORLD);
+	vec3 pixel_position = find_camera_pixel_position(CAMERA_POSITION_WORLD, pixel_direction);
+	float pixel_water_height = sample_water(pixel_position.xz);
+	float is_surface_hit = 0.0;
+	vec3 surface_position = march_to_water(pixel_position, pixel_direction, is_surface_hit);
+	float is_pixel_below_water = step(pixel_position.y, pixel_water_height);
+	
+	float distance_to_ground_from_above = (distance(surface_position.xyz, world_position));
+	float distance_to_ground_from_below = min(distance(pixel_position, world_position), distance(pixel_position, surface_position));
+	float distance_to_ground = mix(
+		distance_to_ground_from_above,
+		distance_to_ground_from_below,
+		is_pixel_below_water);
+	float distance_to_water_surface = (distance(pixel_position, surface_position.xyz));
+	float surface_line =
+		step(world_position.y, surface_position.y) *
+		smoothstep(surface_position.y - 1.0, surface_position.y, world_position.y);
+	vec3 normal = find_normal(surface_position.xz);
 
-	vec3 ndc = vec3(SCREEN_UV, texture(depth_texture, SCREEN_UV).x) * 2.0 - 1.0;
-	vec4 view = INV_PROJECTION_MATRIX * vec4(ndc, 1.0);
-	view.xyz /= view.w;
-	float linear_depth = -view.z;
-	vec4 world = INV_VIEW_MATRIX * INV_PROJECTION_MATRIX * vec4(ndc, 1.0);
-	vec3 world_position = world.xyz / world.w;
-
-	float dist = log2(length(v_world_position - world_position));
-	vec3 scaled_world = v_world_position * noise_scaling;
-	vec3 normal = find_normal(v_world_position * noise_scaling);
-
-	vec3 R = reflect(vec3(0.0, 1.0, 0.0), normal);
-	vec3 V = v_world_position - CAMERA_POSITION_WORLD;
+	vec3 R = normalize(reflect(vec3(0.0, 1.0, 0.0), normal));
+	vec3 V = normalize(pixel_direction);
+	float fresnel = max(dot(normal, V) + 1.0, 0.0);
 	float lamb = max(dot(normal, vec3(0.0, 1.0, 0.0)), 0.0);
-	float spec = pow(max(dot(R, V), 0.0), 3.0);
+	float spec = pow(fresnel, 40.0);
 	
-	
-	vec3 color = mix(shallow_color, deep_color, smoothstep(shallow_depth, deep_depth, dist));
-	color = color + lamb * vec3(.59,.35,.51) + spec * vec3(.59,.35,.51);
-	ALPHA = max(0.35, dist / shallow_depth) + spec;
-	ALBEDO *= color;
+	float can_see_surface = step(distance_to_water_surface, distance_to_ground);
+	float water_alpha = clamp(distance_to_ground / shallow_depth, 0.5, 1.0);
+	vec3 depth_color = mix(shallow_color, deep_color, smoothstep(0.0, deep_depth, min(distance_to_water_surface, distance_to_ground)));
+	vec3 surface_color = lamb * depth_color + spec * shallow_color;
+	float surface_alpha = clamp((water_alpha + spec) * (is_surface_hit * can_see_surface), 0.0, 1.0);
+	float depth_alpha = water_alpha;
+	ALBEDO = clamp(mix(surface_color, depth_color, is_pixel_below_water), 0.0, 1.0) + pow(surface_line, 2.0);
+	ALPHA = clamp(mix(surface_alpha, depth_alpha, is_pixel_below_water), 0.0, 1.0) + surface_line;
 }

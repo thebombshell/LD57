@@ -97,6 +97,17 @@ var multiplier_timer : float = 0.0;
 var music_alpha = 0.0;
 var audio_fadein = 1.0;
 
+var is_position_underwater : bool:
+	get: return global_position.y < Water.current.height_at_point(global_position);
+
+var is_position_very_underwater : bool:
+	get: return global_position.y < Water.current.height_at_point(global_position) - 1.0;
+
+var is_position_overwater : bool:
+	get: return global_position.y > Water.current.height_at_point(global_position) + 2.0;
+
+var is_camera_underwater : bool:
+	get: return camera.global_position.y < Water.current.height_at_point(camera.global_position);
 
 func reset_game():
 	
@@ -254,7 +265,7 @@ func control_diving(t_delta : float) -> void:
 		modified_input.y = 0.0;
 	else:
 		no_input_timer += t_delta;
-	is_underwater = global_position.y < 0.0;
+	is_underwater = is_position_underwater;
 	
 	if is_underwater:
 		
@@ -299,7 +310,7 @@ func control_diving(t_delta : float) -> void:
 	else:
 		velocity += get_gravity() * (8.0 if is_tricking else 4.0) * t_delta;
 	
-	var dir = velocity.normalized();
+	var dir = (velocity + Vector3.ONE * 0.001).normalized();
 	global_basis = global_basis.slerp(Basis.looking_at(-dir), 8.0 * t_delta);
 	return;
 
@@ -307,6 +318,9 @@ func control_running(t_delta : float) -> void:
 	
 	if camera == null:
 		return;
+	
+	if is_position_very_underwater:
+		dive();
 	
 	out_of_water_tiemr += t_delta;
 	if out_of_water_tiemr > 1.5:
@@ -350,6 +364,7 @@ func control_running(t_delta : float) -> void:
 		slappy_footsteps.stream = STEP_RANDOMIZER;
 		slappy_footsteps.play();
 		slappy_footsteps.play(0.05);
+	forward = forward.normalized();
 	global_basis = global_basis.slerp(Basis(Vector3.UP.cross(forward), Vector3.UP, forward), 8.0 * t_delta);
 	return;
 
@@ -483,7 +498,7 @@ func process_camera(t_delta : float) -> void:
 	# part 1
 	
 	var look_target = (global_position + global_basis * Vector3(0.0, 1.0, 10.0));
-	if global_position.y > 4.0:
+	if is_position_overwater:
 		look_target = Vector3(global_position.x, 0.0, global_position.z);
 	var new_basis = Basis.looking_at(look_target - camera.global_position);
 	if no_input_timer > 3.0:
@@ -501,7 +516,7 @@ func process_camera(t_delta : float) -> void:
 	else:
 		camera.global_position = camera.global_position.lerp(target_pos, t_delta * 4.0);
 	
-	if (camera.global_position.y < 0.0 && global_position.y > 0.0) || global_position.y > 1.0:
+	if (is_camera_underwater && !is_position_underwater) || is_position_overwater:
 		camera.global_position += Vector3.UP * 4.0 * t_delta;
 	
 	return;

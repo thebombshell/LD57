@@ -1,6 +1,8 @@
 shader_type spatial;
 
-render_mode unshaded;
+render_mode unshaded, depth_draw_always;
+
+#include "bayer.gdshaderinc"
 
 uniform sampler2D wave_texture : repeat_disable;
 uniform float alpha_cutoff : hint_range(0.0, 1.0) = 0.5;
@@ -14,9 +16,10 @@ void vertex() {
 void fragment() {
 
 	float x = texture(wave_texture, UV).r;
-	if (x < alpha_cutoff)
+	float bayer = bayer_sample(SCREEN_UV, VIEWPORT_SIZE) * alpha_range;
+	if (x + bayer < alpha_cutoff)
 		discard;
 
 	ALBEDO = color;
-	ALPHA = smoothstep(alpha_cutoff, alpha_cutoff + alpha_range, x);
+	ALPHA = 1.0;
 }

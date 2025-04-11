@@ -10,7 +10,7 @@ varying float height;
 
 void vertex() {
 	
-	float x = texture(height_map, (vec2(VERTEX.x, VERTEX.z) / height_map_scale) + 0.5).r;
+	float x = texture(height_map, (VERTEX.xz / height_map_scale) + 0.5).r;
 	VERTEX.y = x * height_map_depth;
 	height = x;
 }

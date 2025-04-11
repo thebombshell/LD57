@@ -6,9 +6,10 @@
 [resource]
 render_priority = -1
 shader = ExtResource("1_0wn3t")
-shader_parameter/shallow_color = Color(0, 0.827451, 0.419608, 1)
-shader_parameter/deep_color = Color(0, 0.152941, 0.231373, 1)
-shader_parameter/shallow_depth = 8.0
-shader_parameter/deep_depth = 16.0
-shader_parameter/noise_scaling = 0.01
-shader_parameter/noise = ExtResource("2_5bh7c")
+shader_parameter/shallow_color = Color(0, 1, 0.623529, 1)
+shader_parameter/deep_color = Color(1.92523e-06, 0.520833, 0.697334, 1)
+shader_parameter/shallow_depth = 10.0
+shader_parameter/deep_depth = 40.0
+shader_parameter/water_map_scale = 8192.0
+shader_parameter/water_map_height = 4.0
+shader_parameter/noise_map = ExtResource("2_5bh7c")

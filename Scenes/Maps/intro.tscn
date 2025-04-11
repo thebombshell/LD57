@@ -1,6 +1,5 @@
-[gd_scene load_steps=49 format=3 uid="uid://bfihfun8u43o0"]
+[gd_scene load_steps=48 format=3 uid="uid://bfihfun8u43o0"]
 
-[ext_resource type="Material" uid="uid://s28r5trsxd3j" path="res://Shaders/water_surface_mat.tres" id="2_sfjar"]
 [ext_resource type="Script" uid="uid://doy677s7ckdfi" path="res://Scripts/continue_button.gd" id="3_ghv44"]
 [ext_resource type="PackedScene" uid="uid://dp5b53jpyngdr" path="res://Scenes/Objects/follow_camera.tscn" id="3_j4dut"]
 [ext_resource type="Script" uid="uid://dfscxgebnw604" path="res://Scripts/reaction_label.gd" id="4_y75as"]
@@ -18,7 +17,7 @@
 [ext_resource type="Texture2D" uid="uid://mhjpkysdks5g" path="res://Textures/radial_noise.png" id="17_8d713"]
 [ext_resource type="Script" uid="uid://ehqbyvqbd11l" path="res://Scenes/Maps/terrain.gd" id="18_8lmst"]
 [ext_resource type="Shader" uid="uid://bvtv5xcbenuh1" path="res://Shaders/boundary_shader.gdshader" id="19_qn6ck"]
-[ext_resource type="Shader" uid="uid://g4tec5auk1e2" path="res://Shaders/wave_splash.gdshader" id="20_dtoo0"]
+[ext_resource type="Shader" uid="uid://g4tec5auk1e2" path="res://Shaders/transparent_cutoff.gdshader" id="20_dtoo0"]
 [ext_resource type="Texture2D" uid="uid://d14nuw3m4qr5q" path="res://Textures/effect_1.png" id="21_2mm7t"]
 [ext_resource type="Script" uid="uid://bryn5wmleeiq3" path="res://Scripts/easy_spin.gd" id="22_l1bvg"]
 [ext_resource type="ArrayMesh" uid="uid://di3mede8m0wsh" path="res://Models/props_Rig.res" id="23_5vyck"]
@@ -26,17 +25,10 @@
 [ext_resource type="PackedScene" uid="uid://bmecaacnoo3br" path="res://Scenes/Objects/water_ring.tscn" id="25_wqi4n"]
 [ext_resource type="PackedScene" uid="uid://ds21sirmau7d5" path="res://Models/slappy.glb" id="25_yvds7"]
 [ext_resource type="Script" uid="uid://dffc61rxm2clg" path="res://Scripts/water_ring.gd" id="26_m855h"]
+[ext_resource type="PackedScene" uid="uid://blvrjo22g1tfa" path="res://Scenes/Objects/water.tscn" id="26_yvds7"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_bho1q"]
 size = Vector3(500, 500, 20)
-
-[sub_resource type="BoxShape3D" id="BoxShape3D_vbkge"]
-size = Vector3(5000, 50, 5000)
-
-[sub_resource type="PlaneMesh" id="PlaneMesh_xy7d5"]
-size = Vector2(5000, 5000)
-subdivide_width = 128
-subdivide_depth = 128
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_nab8s"]
 sky_top_color = Color(0.597725, 0.356195, 0.513166, 1)
@@ -116,7 +108,7 @@ cap_top = false
 cap_bottom = false
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_1hoxq"]
-render_priority = 2
+render_priority = -1
 shader = ExtResource("20_dtoo0")
 shader_parameter/wave_texture = ExtResource("21_2mm7t")
 shader_parameter/alpha_cutoff = 0.0
@@ -128,21 +120,22 @@ material = SubResource("ShaderMaterial_1hoxq")
 flip_faces = true
 top_radius = 2000.0
 bottom_radius = 2000.0
-height = 500.0
+height = 100.0
 cap_top = false
 cap_bottom = false
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_1b8hf"]
 material = SubResource("ShaderMaterial_1hoxq")
+custom_aabb = AABB(0, 250, 0, 0, 0, 0)
 flip_faces = true
 top_radius = 2500.0
 bottom_radius = 2500.0
-height = 1000.0
+height = 250.0
 cap_top = false
 cap_bottom = false
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_1b8hf"]
-render_priority = 1
+render_priority = -2
 shader = ExtResource("20_dtoo0")
 shader_parameter/wave_texture = ExtResource("21_2mm7t")
 shader_parameter/alpha_cutoff = 0.0
@@ -154,9 +147,12 @@ material = SubResource("ShaderMaterial_1b8hf")
 flip_faces = true
 top_radius = 3000.0
 bottom_radius = 3000.0
-height = 3000.0
+height = 500.0
 cap_top = false
 cap_bottom = false
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_sfjar"]
+viewport_path = NodePath("Water/SubViewport")
 
 [node name="Game" type="Node3D"]
 process_mode = 1
@@ -216,19 +212,6 @@ shape = SubResource("BoxShape3D_bho1q")
 [node name="CollisionShape3D12" type="CollisionShape3D" parent="HardSurface"]
 transform = Transform3D(-0.866025, 0, -0.5, 0, 1, 0, 0.5, 0, -0.866025, 150, 0, 259.808)
 shape = SubResource("BoxShape3D_bho1q")
-
-[node name="Water" type="StaticBody3D" parent="."]
-collision_layer = 4
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Water"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -25, 0)
-shape = SubResource("BoxShape3D_vbkge")
-debug_color = Color(1, 0.6, 0.701961, 0.419608)
-
-[node name="MeshInstance3D" type="MeshInstance3D" parent="Water"]
-material_override = ExtResource("2_sfjar")
-cast_shadow = 0
-mesh = SubResource("PlaneMesh_xy7d5")
 
 [node name="follow_camera" parent="." instance=ExtResource("3_j4dut")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.28643, 8.72837)
@@ -574,17 +557,26 @@ mesh = SubResource("CylinderMesh_elduw")
 [node name="Clouds" type="Node3D" parent="."]
 
 [node name="MeshInstance3D2" type="MeshInstance3D" parent="Clouds"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 50, 0)
+cast_shadow = 0
+ignore_occlusion_culling = true
 mesh = SubResource("CylinderMesh_gavpw")
 skeleton = NodePath("../..")
 script = ExtResource("22_l1bvg")
 
 [node name="MeshInstance3D3" type="MeshInstance3D" parent="Clouds"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 125, 0)
+cast_shadow = 0
+ignore_occlusion_culling = true
 mesh = SubResource("CylinderMesh_1b8hf")
 skeleton = NodePath("../..")
 script = ExtResource("22_l1bvg")
 speed = 0.05
 
 [node name="MeshInstance3D4" type="MeshInstance3D" parent="Clouds"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 250, 0)
+cast_shadow = 0
+ignore_occlusion_culling = true
 mesh = SubResource("CylinderMesh_qbkwc")
 skeleton = NodePath("../..")
 script = ExtResource("22_l1bvg")
@@ -642,16 +634,19 @@ script = ExtResource("26_m855h")
 transform = Transform3D(0.0471064, 0, -0.99889, 0, 1, 0, 0.99889, 0, 0.0471064, 6.102, 0, 3.931)
 
 [node name="Skeleton3D" parent="slappy/Armature" index="0"]
-bones/2/rotation = Quaternion(0.886206, -0.00698082, -0.00364892, 0.463225)
-bones/3/rotation = Quaternion(-0.106246, -0.00831739, 0.00455516, 0.994295)
-bones/4/rotation = Quaternion(0.511877, 0.0120394, -0.0162141, 0.858821)
-bones/7/rotation = Quaternion(0.126424, -0.00199246, -0.0156345, 0.991851)
-bones/8/rotation = Quaternion(0.00940147, 0.061559, 0.22843, 0.971567)
+bones/2/rotation = Quaternion(0.707107, -8.42937e-08, -8.42937e-08, 0.707107)
+bones/4/rotation = Quaternion(0.707107, -5.33851e-08, -2.21972e-07, 0.707107)
+bones/7/rotation = Quaternion(0.12644, 3.54758e-07, 3.80442e-08, 0.991974)
+bones/8/rotation = Quaternion(0.00967627, -8.79724e-10, -5.30413e-10, 0.999953)
 bones/9/rotation = Quaternion(-0.70424, -0.0719598, -0.0636112, 0.703436)
 bones/10/rotation = Quaternion(0.0242417, 0.707491, -0.688303, 0.158451)
 bones/11/rotation = Quaternion(-0.70424, 0.0719599, 0.0636113, 0.703436)
 
 [node name="AnimationPlayer" parent="slappy" index="1"]
 autoplay = "idle"
+
+[node name="Water" parent="." instance=ExtResource("26_yvds7")]
+visible = false
+effect_map = SubResource("ViewportTexture_sfjar")
 
 [editable path="slappy"]
