@@ -16,7 +16,7 @@ func _ready() -> void:
 	
 	return;
 
-func _process(t_delta: float) -> void:
+func _phycis_process(t_delta: float) -> void:
 	
 	if Water.current == null:
 		return;

@@ -1,4 +1,4 @@
-[gd_scene load_steps=53 format=3 uid="uid://bohnk0v8c2sb7"]
+[gd_scene load_steps=52 format=3 uid="uid://bohnk0v8c2sb7"]
 
 [ext_resource type="PackedScene" uid="uid://ct3tqi60eog4g" path="res://Scenes/Objects/slappy.tscn" id="1_nh5p0"]
 [ext_resource type="PackedScene" uid="uid://dp5b53jpyngdr" path="res://Scenes/Objects/follow_camera.tscn" id="2_nh5p0"]
@@ -29,9 +29,6 @@
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_bho1q"]
 size = Vector3(500, 500, 20)
-
-[sub_resource type="ViewportTexture" id="ViewportTexture_gopqg"]
-viewport_path = NodePath("Water/SubViewport")
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_nab8s"]
 sky_top_color = Color(0.239183, 0.444497, 0.75359, 1)
@@ -278,7 +275,6 @@ shape = SubResource("BoxShape3D_bho1q")
 
 [node name="Water" parent="." instance=ExtResource("2_qbkwc")]
 visible = false
-effect_map = SubResource("ViewportTexture_gopqg")
 
 [node name="follow_camera" parent="." instance=ExtResource("2_nh5p0")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 9.08884, 8.72837)

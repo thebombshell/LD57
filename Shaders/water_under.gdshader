@@ -32,7 +32,8 @@ void fragment() {
 	float distance_to_water_surface = distance(pixel_position, surface_position.xyz);
 	float surface_line =
 		step(world_position.y, surface_position.y) *
-		smoothstep(surface_position.y - 1.0, surface_position.y, world_position.y);
+		smoothstep(surface_position.y - 1.0, surface_position.y, world_position.y) *
+		smoothstep(100.0, 0.0, distance_to_water_surface);
 	vec3 normal = find_normal(surface_position.xz);
 	
 	vec3 R = normalize(reflect(vec3(0.0, 1.0, 0.0), normal));

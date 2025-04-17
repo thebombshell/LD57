@@ -4,10 +4,7 @@ const NOISE_TEXTURE = preload("res://Textures/noiseTexture.png");
 
 static var current : Water = null;
 
-@onready var sub_viewport: SubViewport = $SubViewport
 @onready var height_shape: CollisionShape3D = $SoftSurface/HeightShape
-
-@export var effect_map : ViewportTexture = null;
 
 var noise_map : Image = NOISE_TEXTURE.get_image();
 var effect_image : Image = null;
@@ -82,11 +79,6 @@ func refresh_texture():
 func _ready():
 	
 	current = self;
-	var mat : ShaderMaterial = material_override;
-	mat.set_shader_parameter("noise_texture", NOISE_TEXTURE);
-	mat.set_shader_parameter("effect_texture", effect_map);
-	mat.set_shader_parameter("water_map_scale", height_map_scale);
-	mat.set_shader_parameter("water_map_height", height_map_height);
 	return;
 
 func _process(t_delta: float) -> void:

@@ -1,6 +1,6 @@
 shader_type spatial;
 
-render_mode unshaded, depth_draw_always;
+render_mode unshaded;
 
 #include "bayer.gdshaderinc"
 
@@ -19,7 +19,5 @@ void fragment() {
 	float bayer = bayer_sample(SCREEN_UV, VIEWPORT_SIZE) * alpha_range;
 	if (x + bayer < alpha_cutoff)
 		discard;
-
 	ALBEDO = color;
-	ALPHA = 1.0;
 }

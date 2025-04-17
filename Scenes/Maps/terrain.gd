@@ -36,12 +36,12 @@ func generate_seaweed(t_count : int = 256):
 		var t_rotation = randf() * PI * 2.0;
 		var uv = Vector2(cos(angle), sin(angle)) * dist;
 		
-		var basis = Basis(Vector3.UP, t_rotation) * randf_range(2.0, 6.0);
-		var position = Vector3(uv.x, sample_at_point(uv) * height_map_depth, uv.y);
+		var rot = Basis(Vector3.UP, t_rotation) * randf_range(2.0, 6.0);
+		var pos = Vector3(uv.x, sample_at_point(uv) * height_map_depth, uv.y);
 		var node = SEAWEED.instantiate();
 		add_child(node);
-		node.basis = basis;
-		node.position = position;
+		node.basis = rot;
+		node.position = pos;
 		
 	for i in t_count:
 		var dist = 1.0 + sqrt(float(i) / float(t_count)) * 350.0;
@@ -49,12 +49,12 @@ func generate_seaweed(t_count : int = 256):
 		var t_rotation = randf() * PI * 2.0;
 		var uv = Vector2(cos(angle), sin(angle)) * dist;
 		
-		var basis = Basis(Vector3.UP, t_rotation) * randf_range(1.5, 4.0);
-		var position = Vector3(uv.x, sample_at_point(uv) * height_map_depth, uv.y);
+		var rot = Basis(Vector3.UP, t_rotation) * randf_range(1.5, 4.0);
+		var pos = Vector3(uv.x, sample_at_point(uv) * height_map_depth, uv.y);
 		var node = REDWEED.instantiate();
 		add_child(node);
-		node.basis = basis;
-		node.position = position;
+		node.basis = rot;
+		node.position = pos;
 		
 	for i in t_count * 2:
 		var dist = 1.0 + sqrt(float(i) / float(t_count)) * 350.0;
@@ -62,12 +62,12 @@ func generate_seaweed(t_count : int = 256):
 		var t_rotation = randf() * PI * 2.0;
 		var uv = Vector2(cos(angle), sin(angle)) * dist;
 		
-		var basis = Basis(Vector3.UP, t_rotation) * randf_range(0.5, 2.0);
-		var position = Vector3(uv.x, sample_at_point(uv) * height_map_depth, uv.y);
+		var rot = Basis(Vector3.UP, t_rotation) * randf_range(0.5, 2.0);
+		var pos = Vector3(uv.x, sample_at_point(uv) * height_map_depth, uv.y);
 		var node = CLUTTER.pick_random().instantiate();
 		add_child(node);
-		node.basis = basis;
-		node.position = position;
+		node.basis = rot;
+		node.position = pos;
 	return;
 
 func sample_at_point(t_position : Vector2) -> float:
